@@ -557,25 +557,25 @@ export function WebGLScene({
 
     // Create 3D Container & 3D Charcoal Cube (Retained as requested!)
     heroCnt = ent(mkContainer(), {
-      nx: -0.04,
-      ny: -0.42,
+      nx: -0.02,
+      ny: -0.36,
       z: -2.0,
-      size: 1.05 * S,
-      ry: -0.55,
-      rx: 0.3,
+      size: 0.95 * S,
+      ry: -0.52,
+      rx: 0.28,
       ph: 1.1,
       pd: 0.08,
       delay: 0.1,
     });
     heroCnt.obj.visible = false;
 
-    // Centerpiece 3D Glowing Coal Cube in Hero
+    // Centerpiece 3D Glowing Coal Cube in Hero (Refined scale so it does not block other assets)
     heroCube = ent(mkCube(MAT.hero), {
-      nx: 0.02,
-      ny: 0.04,
-      z: 0.3,
-      size: 0.82 * S,
-      rz: -0.05,
+      nx: 0.06,
+      ny: 0.02,
+      z: 0.1,
+      size: 0.32 * S,
+      rz: -0.04,
       ry: -0.15,
       ph: 0.5,
       pd: 0.35,
@@ -584,7 +584,7 @@ export function WebGLScene({
     heroCube.obj.visible = false;
 
     closeCnt = ent(mkContainer(), {
-      size: 1.5,
+      size: 1.35,
       rx: 0.2,
       ry: -0.6,
     });
@@ -599,18 +599,19 @@ export function WebGLScene({
 
       let e: Entity | null;
 
-      // Hero floating photo planes
+      // Hero floating photo planes (Positioned clearly in their own quadrants)
+      // 1. Cinnamon Sticks - Bottom Left
       if (
         (e = P(
           'cinnamon',
           { glow: 0xffa860, glowAmt: 0.14, exp: 1.0 },
           {
-            nx: -0.32,
-            ny: 0.38,
-            z: 0.9,
-            size: 0.58 * S,
-            rz: -0.3,
-            ry: 0.2,
+            nx: -0.34,
+            ny: 0.36,
+            z: 0.8,
+            size: 0.46 * S,
+            rz: -0.28,
+            ry: 0.18,
             ph: 2.0,
             pd: 0.5,
             delay: 0.75,
@@ -619,16 +620,17 @@ export function WebGLScene({
       )
         hero.push(e);
 
+      // 2. Green Coffee - Bottom Right
       if (
         (e = P(
           'coffee',
           { glow: 0xc9d99a, glowAmt: 0.14, exp: 1.0 },
           {
-            nx: 0.38,
-            ny: 0.34,
-            z: 1.0,
-            size: 0.44 * S,
-            rz: 0.3,
+            nx: 0.36,
+            ny: 0.28,
+            z: 0.85,
+            size: 0.38 * S,
+            rz: 0.22,
             ph: 3.0,
             pd: 0.55,
             delay: 0.95,
@@ -637,18 +639,19 @@ export function WebGLScene({
       )
         hero.push(e);
 
+      // 3. Cloves - Mid Left (between container & cinnamon)
       if (
         !narrow &&
         (e = P(
           'cloves',
           { glow: 0xffa860, glowAmt: 0.14, exp: 1.05 },
           {
-            nx: -0.02,
-            ny: 0.47,
-            z: 1.1,
-            size: 0.3,
-            rz: 0.5,
-            ry: -0.2,
+            nx: -0.26,
+            ny: -0.08,
+            z: 0.95,
+            size: 0.25 * S,
+            rz: 0.38,
+            ry: -0.16,
             ph: 4.0,
             pd: 0.45,
             delay: 1.1,
@@ -661,10 +664,14 @@ export function WebGLScene({
       if (heroCube) heroCube.obj.visible = true;
 
       // Commodities Section (Corresponding to index 0..3):
-      // Index 0: 3D Asset Cube Coal (Retained! Genuine 3D glowing cube 25mm)
+      // Index 0: 3D Asset Cube Coal (Retained! Refined elegant 25mm briquette proportions)
       const comCube = ent(mkCube(MAT.cube), {
-        size: 0.88,
-        ry: -0.15,
+        nx: 0,
+        ny: 0,
+        z: 0.05,
+        size: 0.42,
+        ry: -0.22,
+        rx: 0.16,
         rz: -0.04,
         ph: 1.0,
         pd: 0.3,
@@ -683,7 +690,7 @@ export function WebGLScene({
             haloSize: 1.5,
             exp: 1.75,
           },
-          { size: 0.98, ry: -0.1, rz: -0.04, ph: 1.0, pd: 0.3 }
+          { nx: 0, ny: 0, z: 0.0, size: 0.68, ry: -0.1, rz: -0.04, ph: 1.0, pd: 0.3 }
         ))
       )
         com.push(e);
@@ -694,7 +701,7 @@ export function WebGLScene({
         (e = P(
           'coffee',
           { glow: 0xc9d99a, glowAmt: 0.1 },
-          { size: 0.9, rz: 0.15, ph: 2.0, pd: 0.3 }
+          { nx: 0, ny: 0, z: 0.0, size: 0.64, rz: 0.15, ph: 2.0, pd: 0.3 }
         ))
       )
         com.push(e);
@@ -713,7 +720,7 @@ export function WebGLScene({
         b.rotation.z = 0.35;
         g.add(a, b);
         g.userData = { parts: [a, b] };
-        e = ent(g, { photo: true, size: 0.98, ph: 3.0, pd: 0.3 });
+        e = ent(g, { photo: true, nx: 0, ny: 0, z: 0.0, size: 0.68, ph: 3.0, pd: 0.3 });
         com.push(e);
       } else {
         com.push(null);
@@ -905,10 +912,10 @@ export function WebGLScene({
         if (heroCube) {
           place(heroCube, sh, 1, t);
           // Ember light following glowing cube
-          emberA.intensity = 1.2 + Math.sin(t * 3.0) * 0.3;
+          emberA.intensity = 0.9 + Math.sin(t * 3.0) * 0.2;
           emberA.position
             .copy(heroCube.obj.position)
-            .add(new THREE.Vector3(0.2, 0.2, 0.4));
+            .add(new THREE.Vector3(0.1, 0.1, 0.2));
         }
         hero.forEach((entItem) => {
           place(entItem, sh, 1, t);
@@ -936,10 +943,10 @@ export function WebGLScene({
 
             // When Shisha charcoal (Index 0 - 3D Cube) is active, boost ember warmth
             if (i === 0 && !entItem.photo) {
-              emberB.intensity = (1.5 + Math.sin(t * 3.5) * 0.4) * entItem.a;
+              emberB.intensity = (1.1 + Math.sin(t * 3.5) * 0.25) * entItem.a;
               emberB.position
                 .copy(entItem.obj.position)
-                .add(new THREE.Vector3(0.3, 0.2, 0.4));
+                .add(new THREE.Vector3(0.15, 0.1, 0.2));
             }
           }
         });
