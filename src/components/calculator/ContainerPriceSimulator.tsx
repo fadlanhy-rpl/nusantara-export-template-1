@@ -69,19 +69,26 @@ export function ContainerPriceSimulator({
   const { openRfq } = usePitch();
   const rtl = isRtl(locale);
 
+  const getBenchmarkTarget = (idx: number) => {
+    const prod = PRODUCTS[idx] || PRODUCTS[0];
+    return r5(prod.low * 0.95);
+  };
+
   const [productIdx, setProductIdx] = useState(selectedCommodityIndex);
   const [ctype, setCtype] = useState<'20FT' | '40FT' | '40HC'>('40HC');
   const [qty, setQty] = useState(2);
-  const [targetPrice, setTargetPrice] = useState('1,210');
+  const [targetPrice, setTargetPrice] = useState(() => fmt(getBenchmarkTarget(selectedCommodityIndex)));
 
   useEffect(() => {
     if (selectedCommodityIndex !== undefined && selectedCommodityIndex !== productIdx) {
       setProductIdx(selectedCommodityIndex);
+      setTargetPrice(fmt(getBenchmarkTarget(selectedCommodityIndex)));
     }
   }, [selectedCommodityIndex]);
 
   const handleProductSelect = (idx: number) => {
     setProductIdx(idx);
+    setTargetPrice(fmt(getBenchmarkTarget(idx)));
     if (onCommodityChange) {
       onCommodityChange(idx);
     }
@@ -238,7 +245,7 @@ export function ContainerPriceSimulator({
                     const digits = e.target.value.replace(/[^0-9]/g, '');
                     setTargetPrice(digits ? fmt(+digits) : '');
                   }}
-                  placeholder="1,210"
+                  placeholder={fmt(getBenchmarkTarget(productIdx))}
                 />
               </div>
             </div>

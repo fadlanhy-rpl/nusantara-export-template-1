@@ -832,22 +832,9 @@ export function WebGLScene({
         );
       }
 
-      // Commodities Slot
-      const comSec = document.getElementById('commodities');
-      const comSlotEl = document.getElementById('slot-com');
-      const rc = comSec ? comSec.getBoundingClientRect() : null;
-      const cv_ = secVis(rc);
-      const sc = slotInfo(comSlotEl);
-
-      com.forEach((e, i) => {
-        const target = i === stateRef.current.activeCom ? 1 : 0;
-        e.a += (target - e.a) * 0.1;
-        const show = cv_ > 0.001 && e.a > 0.005;
-        e.obj.visible = show;
-        if (show) {
-          place(e, sc, ease(cv_) * ease(e.a), t);
-          e.obj.rotation.y += (1 - e.a) * 2.2;
-        }
+      // Commodities Slot: Procedural meshes disabled in favor of real documentary macro photography
+      com.forEach((e) => {
+        e.obj.visible = false;
       });
 
       // Process Slot

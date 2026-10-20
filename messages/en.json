@@ -194,6 +194,23 @@
       }
     ]
   },
+  "trustEvidence": {
+    "label": "Audit & Physical Proof",
+    "title": "Real Facilities. Documented Stuffing. Verified Legal.",
+    "subtitle": "We operate physical manufacturing and export processing facilities in Gresik (East Java) and Medan (North Sumatra). Inspect our stuffing operations and government-verified compliance documentation.",
+    "galleryTab": "Physical Stuffing & Facilities",
+    "certsTab": "Laboratory & Export Licenses",
+    "g1Title": "Gresik Central Factory & Dry Storage",
+    "g1Desc": "350 MT buffer capacity • 12 moisture-isolated staging bays • Palletized master cartons.",
+    "g2Title": "Container Stuffing & Desiccant Placement",
+    "g2Desc": "40ft HC loading under strict humidity control • Super Dry desiccant poles placed • Temperature logged.",
+    "g3Title": "Tanjung Perak Port Loading (Surabaya)",
+    "g3Desc": "Direct 25 km transport corridor to Port of Tanjung Perak (IDSUB) • Gantry crane vessel loading.",
+    "g4Title": "ISO 17712 High-Security Bolt Seal",
+    "g4Desc": "Tamper-evident customs bolt seal locked on site • Seal serial number recorded on Bill of Lading.",
+    "requestPdf": "Request Original PDF",
+    "verifyNotice": "Official government and laboratory certificates issued to registered legal entity. Watermarked for anti-theft protection."
+  },
   "closing": {
     "title": "Let's talk",
     "titleAccent": "cargo",

@@ -7,8 +7,88 @@ import { getDictionary } from '@/lib/dictionary';
 import { usePitch } from '@/context/PitchContext';
 import { WebGLScene } from '@/components/canvas/WebGLScene';
 import { ContainerPriceSimulator } from '@/components/calculator/ContainerPriceSimulator';
+import { TrustEvidenceSection } from '@/components/trust/TrustEvidenceSection';
 import { siteConfig } from '@/config/site-config';
 import { isRtl } from '@/lib/i18n';
+
+const COMMODITY_SHOWCASE = [
+  {
+    slug: 'premium-shisha-coconut-charcoal-briquettes',
+    hsCode: '4402.90.10',
+    origin: 'East Java & Sulawesi (Factory: Gresik)',
+    badge: 'SGS VERIFIED • 100% COCONUT SHELL',
+    title: {
+      en: 'Premium Shisha Coconut Charcoal Briquettes',
+      id: 'Briket Arang Kelapa Shisha Premium (Grade Platinum)',
+      ar: 'فحم جوز الهند الطبيعي للشيشة (درجة بلاتينية)',
+      zh: '特级水烟椰壳炭块 (白金出口级)',
+    },
+    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80',
+    price: '1,280 - 1,350',
+    specs: [
+      { label: 'Ash Content', val: '< 2.2% White' },
+      { label: 'Moisture', val: '< 4.5%' },
+      { label: 'Burning Time', val: '2.5 Hours' },
+    ],
+  },
+  {
+    slug: 'bbq-hexagonal-hardwood-coconut-charcoal',
+    hsCode: '4402.90.90',
+    origin: 'Kalimantan & East Java',
+    badge: 'HOTEL & RESTO GRADE • ZERO CHEMICALS',
+    title: {
+      en: 'BBQ Hexagonal Hardwood & Coconut Charcoal',
+      id: 'Briket Arang Heksagonal BBQ Campuran Kayu Keras',
+      ar: 'فحم الشواء السداسي المفرغ للمطاعم',
+      zh: '六角形硬木与椰壳烧烤炭 (无烟长效型)',
+    },
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80',
+    price: '950 - 1,080',
+    specs: [
+      { label: 'Ash Content', val: '< 4.0%' },
+      { label: 'Calorific', val: '7,200 kcal/kg' },
+      { label: 'Burning Time', val: '4.5 - 5 Hours' },
+    ],
+  },
+  {
+    slug: 'sumatra-mandheling-arabica-green-beans',
+    hsCode: '0901.11.10',
+    origin: 'Mandheling & Gayo, North Sumatra (1,450 MASL)',
+    badge: 'SPECIALTY GRADE 1 • TRIPLE PICKED',
+    title: {
+      en: 'Sumatra Mandheling Arabica Green Coffee Beans',
+      id: 'Biji Kopi Mentah Arabika Sumatra Mandheling Grade 1',
+      ar: 'حبوب البن الأخضر أرابيكا سومطرة ماندهيلينغ (درجة 1)',
+      zh: '苏门答腊曼特宁阿拉比卡生咖啡豆 (G1特选)',
+    },
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
+    price: '5,400 - 5,800',
+    specs: [
+      { label: 'Moisture', val: '11.5% - 12%' },
+      { label: 'Screen Size', val: '17 / 18' },
+      { label: 'Defect Rate', val: '< 3% Max' },
+    ],
+  },
+  {
+    slug: 'maluku-lalpari-cloves-handpicked',
+    hsCode: '0907.10.00',
+    origin: 'Ambon & Seram (Maluku Islands)',
+    badge: 'HANDPICKED LALPARI • HIGH EUGENOL',
+    title: {
+      en: 'Handpicked Maluku Lalpari Cloves & Kerinci Cinnamon',
+      id: 'Cengkeh Lalpari Maluku & Kayu Manis Kerinci Pilihan',
+      ar: 'قرنفل لالباري مالوكو يدوي الانتقاء وقرفة كيرينتشي',
+      zh: '马鲁古精选手工丁香与葛林芝肉桂',
+    },
+    image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1200&q=80',
+    price: '3,900 - 4,300',
+    specs: [
+      { label: 'Eugenol Oil', val: '18% - 20%' },
+      { label: 'Head Intact', val: '> 92%' },
+      { label: 'Foreign Matter', val: '< 0.5%' },
+    ],
+  },
+];
 
 export default function HomePage() {
   const params = useParams();
@@ -311,8 +391,85 @@ export default function HomePage() {
                 <p className="note">{dict.commoditiesSection.indicativeNote}</p>
               </div>
 
-              {/* Sticky 3D Slot */}
-              <div className="slot-sticky" id="slot-com" aria-hidden="true" />
+              {/* Sticky Real Documentary Commodity Showcase */}
+              <div className="slot-sticky" id="slot-com">
+                <div className="relative w-full h-[540px] rounded-2xl overflow-hidden border border-[#222731] bg-[#14171E] shadow-2xl flex flex-col justify-between group">
+                  {/* Real Macro Documentary Photo */}
+                  <div className="relative w-full h-full overflow-hidden">
+                    <img
+                      src={COMMODITY_SHOWCASE[activeCom].image}
+                      alt={COMMODITY_SHOWCASE[activeCom].title[locale] || COMMODITY_SHOWCASE[activeCom].title.en}
+                      className="w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.12] transition-all duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F17] via-[#0B0F17]/30 to-transparent pointer-events-none" />
+
+                    {/* Top Quality & HS Code Badge */}
+                    <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 pointer-events-none z-10">
+                      <span className="px-3 py-1 rounded-full bg-[#0B0F17]/85 backdrop-blur-md border border-[#E8742A]/40 text-[#E8742A] text-xs font-mono font-medium flex items-center gap-1.5 shadow-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#E8742A] animate-pulse" />
+                        {COMMODITY_SHOWCASE[activeCom].badge}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white/80 text-[11px] font-mono">
+                        HS {COMMODITY_SHOWCASE[activeCom].hsCode}
+                      </span>
+                    </div>
+
+                    {/* Bottom Specs & Action Card Overlay */}
+                    <div className="absolute bottom-0 inset-x-0 p-5 space-y-3 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/90 to-transparent z-10">
+                      <div>
+                        <div className="text-[11px] text-[#8E8E93] font-mono uppercase tracking-wider">
+                          {COMMODITY_SHOWCASE[activeCom].origin}
+                        </div>
+                        <h3 className="text-xl font-bold text-white tracking-tight flex items-center justify-between">
+                          <span>{COMMODITY_SHOWCASE[activeCom].title[locale] || COMMODITY_SHOWCASE[activeCom].title.en}</span>
+                          <span className="text-sm font-mono text-[#E8742A] font-semibold">
+                            FOB ${COMMODITY_SHOWCASE[activeCom].price}/MT
+                          </span>
+                        </h3>
+                      </div>
+
+                      {/* Key Lab Parameters Grid */}
+                      <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono backdrop-blur-sm">
+                        {COMMODITY_SHOWCASE[activeCom].specs.map((sp, sIdx) => (
+                          <div key={sIdx} className="text-center">
+                            <div className="text-[10px] text-[#8E8E93] uppercase">{sp.label}</div>
+                            <div className="font-semibold text-white pt-0.5">{sp.val}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Interactive Actions */}
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => handlePlanClick(activeCom)}
+                          className="flex-1 h-10 px-4 rounded-xl bg-[#E8742A] hover:bg-[#D96B27] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
+                        >
+                          <span>{dict.commoditiesSection.planContainer}</span>
+                          <svg className="w-3.5 h-3.5 rtl:rotate-180" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 8h10M9 4l4 4-4 4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const slugs = [
+                              'premium-shisha-coconut-charcoal-briquettes',
+                              'bbq-hexagonal-hardwood-coconut-charcoal',
+                              'sumatra-mandheling-arabica-green-beans',
+                              'maluku-lalpari-cloves-handpicked',
+                            ];
+                            openRfq({ productSlug: slugs[activeCom] });
+                          }}
+                          className="h-10 px-3.5 rounded-xl border border-white/20 bg-black/40 hover:bg-white/10 text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <span>{dict.nav.requestQuote}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -360,6 +517,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* 8. Physical Trust & Legal Evidence Section */}
+        <TrustEvidenceSection locale={locale} dict={dict} />
+
         {/* 8. Closing Section */}
         <section className="closing" id="contact">
           <div className="wrap">
@@ -371,7 +531,15 @@ export default function HomePage() {
                 <button
                   className="btn btn-light"
                   type="button"
-                  onClick={() => openRfq()}
+                  onClick={() => {
+                    const slugs = [
+                      'premium-shisha-coconut-charcoal-briquettes',
+                      'bbq-hexagonal-hardwood-coconut-charcoal',
+                      'sumatra-mandheling-arabica-green-beans',
+                      'maluku-lalpari-cloves-handpicked',
+                    ];
+                    openRfq({ productSlug: slugs[activeCom] || slugs[0] });
+                  }}
                 >
                   {dict.closing.cta}
                   <svg

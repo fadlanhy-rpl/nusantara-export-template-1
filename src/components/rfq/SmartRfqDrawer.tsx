@@ -60,8 +60,14 @@ export function SmartRfqDrawer({ locale, dict }: SmartRfqDrawerProps) {
       setStatusMsg('');
       setErrors({});
       setSubmittedRef(null);
+      if (rfqPrefill.targetPrice) {
+        setTarget(rfqPrefill.targetPrice.toLocaleString('en-US'));
+      } else {
+        const prod = productsData.find((p) => p.slug === rfqPrefill.productSlug) || productsData[0];
+        setTarget(prod.pricing.fobPriceMinPerMT.toLocaleString('en-US'));
+      }
     }
-  }, [isRfqOpen]);
+  }, [isRfqOpen, rfqPrefill]);
 
   // Construct warm, human WhatsApp message with bold labels (*...*)
   const constructMessage = () => {

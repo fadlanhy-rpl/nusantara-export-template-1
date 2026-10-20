@@ -194,6 +194,23 @@
       }
     ]
   },
+  "trustEvidence": {
+    "label": "Audit & Bukti Fisik",
+    "title": "Fasilitas Nyata. Stuffing Terdokumentasi. Legalitas Terverifikasi.",
+    "subtitle": "Kami mengoperasikan fasilitas manufaktur dan pengolahan ekspor fisik di Gresik (Jawa Timur) dan Medan (Sumatera Utara). Tinjau langsung proses stuffing kontainer kami dan dokumen kepatuhan terverifikasi pemerintah.",
+    "galleryTab": "Dokumentasi Stuffing & Gudang",
+    "certsTab": "Hasil Lab & Izin Ekspor",
+    "g1Title": "Gudang & Pabrik Pusat Gresik",
+    "g1Desc": "Kapasitas buffer 350 MT • 12 bay penyimpanan kedap kelembaban • Master kardus tersusun di atas palet.",
+    "g2Title": "Proses Stuffing Kontainer & Pemasangan Desikan",
+    "g2Desc": "Pemuatan kontainer 40ft HC dengan kontrol kelembapan ketat • Tiang desikan Super Dry dipasang • Suhu dicatat.",
+    "g3Title": "Pemuatan Kapal di Pelabuhan Tanjung Perak",
+    "g3Desc": "Koridor transportasi langsung 25 km ke Pelabuhan Tanjung Perak (IDSUB) • Pemuatan crane gantry ke kapal.",
+    "g4Title": "Segel Baut Keamanan Tinggi ISO 17712",
+    "g4Desc": "Segel kontainer anti-manipulasi dipasang langsung di lokasi • Nomor seri segel tercatat resmi di Bill of Lading.",
+    "requestPdf": "Minta PDF Asli",
+    "verifyNotice": "Sertifikat resmi pemerintah dan laboratorium diterbitkan untuk badan hukum terdaftar. Dilindungi watermark anti-pencurian."
+  },
   "closing": {
     "title": "Mari bicarakan",
     "titleAccent": "kargo Anda",
