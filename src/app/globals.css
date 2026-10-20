@@ -141,7 +141,8 @@ main > section { position: relative; z-index: 2; }
   z-index: 60;
   top: calc(16px + env(safe-area-inset-top, 0px));
   left: 50%;
-  width: min(1080px, calc(100% - 32px));
+  /* Exactly matches section container width (.wrap max-width: 1240px) */
+  width: min(1240px, calc(100% - 32px));
   height: 60px;
   transform: translate(-50%, 0);
   display: flex;
