@@ -168,79 +168,239 @@ export function WebGLScene({
     (function () {
       const R = rng(7);
 
-      // Noise bump map
-      let c = cv(256, 256);
+      // Dedicated High-Resolution Surface Relief Bump Map (1024x1024)
+      let c = cv(1024, 1024);
       let x = c.getContext('2d');
       if (x) {
         x.fillStyle = '#808080';
-        x.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 2200; i++) {
-          const v = (40 + R() * 175) | 0;
-          x.fillStyle = `rgba(${v},${v},${v},0.2)`;
-          x.beginPath();
-          x.arc(R() * 256, R() * 256, 0.8 + R() * 5, 0, 6.283);
-          x.fill();
+        x.fillRect(0, 0, 1024, 1024);
+
+        // Micro-porosity noise of compacted coconut shell
+        for (let i = 0; i < 4000; i++) {
+          const v = (90 + R() * 80) | 0;
+          x.fillStyle = `rgba(${v}, ${v}, ${v}, 0.35)`;
+          x.fillRect(R() * 1024, R() * 1024, 1 + R() * 3, 1 + R() * 3);
         }
-        T.noise = tex(c, false);
-        T.noise.wrapS = T.noise.wrapT = THREE.RepeatWrapping;
+
+        // Extrusion compaction lines
+        for (let i = 0; i < 1024; i += 6) {
+          const d = R() > 0.5 ? 20 : -20;
+          x.fillStyle = `rgba(${128 + d}, ${128 + d}, ${128 + d}, 0.18)`;
+          x.fillRect(0, i, 1024, 3);
+        }
+
+        T.bump = tex(c, false);
+        T.bump.wrapS = T.bump.wrapT = THREE.RepeatWrapping;
       }
 
-      // Charcoal surface texture
-      c = cv(512, 512);
+      // Charcoal Surface Albedo Map with Signature Ultra-Fine White Ash Layer (< 2.2% Ash)
+      c = cv(1024, 1024);
       x = c.getContext('2d');
       if (x) {
-        x.fillStyle = '#1b1917';
-        x.fillRect(0, 0, 512, 512);
-        for (let i = 0; i < 70; i++) {
-          const gx = x.createRadialGradient(0, 0, 0, 0, 0, 14 + R() * 40);
-          gx.addColorStop(0, `rgba(190,186,178,${0.05 + R() * 0.12})`);
-          gx.addColorStop(1, 'rgba(190,186,178,0)');
+        // Deep matte carbon anthracite base
+        x.fillStyle = '#11100f';
+        x.fillRect(0, 0, 1024, 1024);
+
+        // Factory hydraulic press compression grain
+        for (let i = 0; i < 1024; i += 4) {
+          const l = 16 + (R() * 10) | 0;
+          x.fillStyle = `rgba(${l}, ${l - 2}, ${l - 4}, 0.3)`;
+          x.fillRect(0, i, 1024, 2 + R() * 3);
+        }
+
+        // Granular coconut shell micro-flakes (carbon reflections)
+        for (let i = 0; i < 4500; i++) {
+          const v = (14 + R() * 22) | 0;
+          x.fillStyle = `rgba(${v}, ${v}, ${v}, ${0.35 + R() * 0.4})`;
+          x.fillRect(R() * 1024, R() * 1024, 1 + R() * 2, 1 + R() * 2);
+        }
+
+        // Natural carbon micro-pores
+        for (let i = 0; i < 90; i++) {
+          const gx = x.createRadialGradient(0, 0, 0, 0, 0, 6 + R() * 22);
+          gx.addColorStop(0, 'rgba(5, 5, 5, 0.5)');
+          gx.addColorStop(1, 'rgba(5, 5, 5, 0)');
           x.save();
-          x.translate(R() * 512, R() * 512);
+          x.translate(R() * 1024, R() * 1024);
           x.fillStyle = gx;
-          x.fillRect(-60, -60, 120, 120);
+          x.fillRect(-25, -25, 50, 50);
           x.restore();
         }
-        for (let i = 0; i < 700; i++) {
-          x.fillStyle = `rgba(230,226,218,${R() * 0.25})`;
-          x.fillRect(R() * 512, R() * 512, 1 + R() * 2, 1 + R() * 2);
+
+        // --- SIGNATURE ULTRA-FINE WHITE ASH LAYER (< 2.2% Ash) ---
+        // 1. Soft perimeter powdery ash bloom along borders and edges
+        const ashGrad = (x0: number, y0: number, x1: number, y1: number) => {
+          const g = x!.createLinearGradient(x0, y0, x1, y1);
+          g.addColorStop(0, 'rgba(235, 232, 225, 0.42)');
+          g.addColorStop(0.3, 'rgba(215, 210, 202, 0.22)');
+          g.addColorStop(0.7, 'rgba(180, 175, 168, 0.08)');
+          g.addColorStop(1, 'rgba(180, 175, 168, 0)');
+          return g;
+        };
+
+        x.fillStyle = ashGrad(0, 0, 0, 130);
+        x.fillRect(0, 0, 1024, 130);
+        x.fillStyle = ashGrad(0, 1024, 0, 894);
+        x.fillRect(0, 894, 1024, 130);
+        x.fillStyle = ashGrad(0, 0, 130, 0);
+        x.fillRect(0, 0, 130, 1024);
+        x.fillStyle = ashGrad(1024, 0, 894, 0);
+        x.fillRect(894, 0, 130, 1024);
+
+        // 2. Corner accumulation patches of fine white/calcined ash
+        const cornerAsh = [
+          [0, 0],
+          [1024, 0],
+          [0, 1024],
+          [1024, 1024],
+          [280, 320],
+          [740, 680],
+          [420, 780],
+        ];
+        cornerAsh.forEach(([cx, cy]) => {
+          const rad = 60 + R() * 110;
+          const g = x!.createRadialGradient(cx, cy, 0, cx, cy, rad);
+          g.addColorStop(0, `rgba(240, 238, 232, ${0.42 + R() * 0.22})`);
+          g.addColorStop(0.5, 'rgba(210, 206, 198, 0.16)');
+          g.addColorStop(1, 'rgba(210, 206, 198, 0)');
+          x!.fillStyle = g;
+          x!.beginPath();
+          x!.arc(cx, cy, rad, 0, Math.PI * 2);
+          x!.fill();
+        });
+
+        // 3. Delicate powdery ash specks and micro-dusting
+        for (let i = 0; i < 1200; i++) {
+          const l = (210 + R() * 45) | 0;
+          x.fillStyle = `rgba(${l}, ${l - 4}, ${l - 10}, ${0.25 + R() * 0.55})`;
+          const sz = 0.8 + R() * 2.2;
+          x.fillRect(R() * 1024, R() * 1024, sz, sz);
         }
+
         T.char = tex(c, true);
       }
 
-      // Glowing Ember heat cracks texture
-      c = cv(512, 512);
+      // Photorealistic Incandescent Thermal Ember Map (Multi-tier thermodynamic incandescence)
+      c = cv(1024, 1024);
       x = c.getContext('2d');
       if (x) {
-        x.fillStyle = '#000';
-        x.fillRect(0, 0, 512, 512);
-        x.lineCap = 'round';
-        x.lineJoin = 'round';
-        for (let i = 0; i < 16; i++) {
-          let px = R() * 512;
-          let py = R() * 512;
-          let ang = R() * 6.283;
-          x.beginPath();
-          x.moveTo(px, py);
-          for (let s = 0; s < 8; s++) {
-            ang += (R() - 0.5) * 1.5;
-            px += Math.cos(ang) * (22 + R() * 34);
-            py += Math.sin(ang) * (22 + R() * 34);
-            x.lineTo(px, py);
-          }
-          x.shadowColor = '#ff3d00';
-          x.shadowBlur = 16;
-          x.strokeStyle = '#ff7a24';
-          x.lineWidth = 1.5 + R() * 3.5;
-          x.stroke();
+        x.fillStyle = '#000000';
+        x.fillRect(0, 0, 1024, 1024);
+
+        interface CrackSegment {
+          pts: { x: number; y: number }[];
+          intensity: number;
         }
-        for (let i = 0; i < 12; i++) {
-          x.shadowBlur = 24;
-          x.fillStyle = '#ff5a10';
+
+        const networks: CrackSegment[] = [];
+
+        // 4 primary thermal stress fissure origins
+        const origins = [
+          { x: 320, y: 350 },
+          { x: 720, y: 640 },
+          { x: 440, y: 760 },
+          { x: 680, y: 280 },
+        ];
+
+        origins.forEach((orig) => {
+          let curX = orig.x;
+          let curY = orig.y;
+          let ang = R() * Math.PI * 2;
+          const mainPts = [{ x: curX, y: curY }];
+
+          const steps = 14 + ((R() * 10) | 0);
+          for (let s = 0; s < steps; s++) {
+            ang += (R() - 0.5) * 1.2;
+            curX += Math.cos(ang) * (18 + R() * 26);
+            curY += Math.sin(ang) * (18 + R() * 26);
+            mainPts.push({ x: curX, y: curY });
+
+            // Branch fissure
+            if (s > 2 && s % 4 === 0 && R() > 0.3) {
+              let bX = curX;
+              let bY = curY;
+              let bAng = ang + (R() > 0.5 ? 1 : -1) * (0.6 + R() * 0.7);
+              const branchPts = [{ x: bX, y: bY }];
+              const bSteps = 6 + ((R() * 7) | 0);
+              for (let bs = 0; bs < bSteps; bs++) {
+                bAng += (R() - 0.5) * 1.3;
+                bX += Math.cos(bAng) * (14 + R() * 20);
+                bY += Math.sin(bAng) * (14 + R() * 20);
+                branchPts.push({ x: bX, y: bY });
+              }
+              networks.push({ pts: branchPts, intensity: 0.75 + R() * 0.25 });
+            }
+          }
+          networks.push({ pts: mainPts, intensity: 1.0 });
+        });
+
+        const drawPass = (
+          color: string,
+          shadowColor: string,
+          shadowBlur: number,
+          widthMultiplier: number
+        ) => {
+          x!.lineCap = 'round';
+          x!.lineJoin = 'round';
+          x!.shadowColor = shadowColor;
+          x!.shadowBlur = shadowBlur;
+          x!.strokeStyle = color;
+
+          networks.forEach((net) => {
+            if (net.pts.length < 2) return;
+            x!.beginPath();
+            x!.moveTo(net.pts[0].x, net.pts[0].y);
+            for (let i = 1; i < net.pts.length; i++) {
+              x!.lineTo(net.pts[i].x, net.pts[i].y);
+            }
+            x!.lineWidth = (1.2 + net.intensity * 2.8) * widthMultiplier;
+            x!.stroke();
+          });
+        };
+
+        // Pass 1: Deep cherry-red thermal diffusion halo
+        drawPass('rgba(165, 25, 0, 0.65)', '#b31e00', 36, 3.2);
+
+        // Pass 2: Vivid ember-orange crevice
+        drawPass('rgba(255, 110, 16, 0.95)', '#ff6400', 16, 1.6);
+
+        // Pass 3: White-hot incandescent capillary core (~750°C)
+        drawPass('rgba(255, 248, 200, 1.0)', '#ffe680', 6, 0.65);
+
+        // Glowing thermal ember pits (internal burning pockets)
+        origins.forEach((orig) => {
+          const pitRadius = 14 + R() * 16;
+          const g = x!.createRadialGradient(orig.x, orig.y, 0, orig.x, orig.y, pitRadius);
+          g.addColorStop(0, 'rgba(255, 250, 220, 1.0)');
+          g.addColorStop(0.25, 'rgba(255, 140, 20, 0.9)');
+          g.addColorStop(0.65, 'rgba(180, 30, 0, 0.55)');
+          g.addColorStop(1, 'rgba(180, 30, 0, 0)');
+          x!.shadowBlur = 24;
+          x!.shadowColor = '#ff6000';
+          x!.fillStyle = g;
+          x!.beginPath();
+          x!.arc(orig.x, orig.y, pitRadius, 0, Math.PI * 2);
+          x!.fill();
+        });
+
+        // 18 micro-pore thermal hot-spots
+        for (let i = 0; i < 18; i++) {
+          const px = R() * 1024;
+          const py = R() * 1024;
+          const r = 2 + R() * 4.5;
+          const g = x.createRadialGradient(px, py, 0, px, py, r * 2.5);
+          g.addColorStop(0, '#fff5c0');
+          g.addColorStop(0.4, '#ff6e0a');
+          g.addColorStop(0.85, '#991800');
+          g.addColorStop(1, 'rgba(150, 24, 0, 0)');
+          x.shadowBlur = 12;
+          x.shadowColor = '#ff5500';
+          x.fillStyle = g;
           x.beginPath();
-          x.arc(R() * 512, R() * 512, 2 + R() * 5, 0, 6.283);
+          x.arc(px, py, r * 2.5, 0, Math.PI * 2);
           x.fill();
         }
+
         T.crack = tex(c, true);
       }
 
@@ -289,30 +449,61 @@ export function WebGLScene({
       }
     })();
 
-    // 3. 3D Cube Geometry (Coconut charcoal briquette cube 25mm)
-    function sn(x: number, y: number, z: number) {
-      return (
-        (Math.sin(x * 5 + 1.3) * Math.sin(y * 6 + 0.7) +
-          Math.sin(z * 7 + 2.1) * Math.sin(x * 9 + y * 3)) *
-          0.25 +
-        0.5
-      );
-    }
-
+    // 3. High-Detail 3D Cube Geometry (Indonesian Export 25mm Briquette Moulding)
     function cubeGeo() {
-      const g = new THREE.BoxGeometry(1, 1, 1, 14, 14, 14);
-      const p = g.attributes.position;
+      // 32 subdivisions per axis for fine tactile micro-fracture detail
+      const g = new THREE.BoxGeometry(1, 1, 1, 32, 32, 32);
+      const pos = g.attributes.position;
       const v = new THREE.Vector3();
       const n = new THREE.Vector3();
-      for (let i = 0; i < p.count; i++) {
-        v.fromBufferAttribute(p, i);
-        n.copy(v).normalize().multiplyScalar(0.64);
-        v.lerp(n, 0.22);
-        const d = (sn(v.x, v.y, v.z) - 0.5) * 0.06;
+
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i);
+
+        // 1. Hydraulic press mould edge rounding (fillet / beveling)
+        const r = 0.07;
+        const qx = Math.max(0, Math.abs(v.x) - (0.5 - r));
+        const qy = Math.max(0, Math.abs(v.y) - (0.5 - r));
+        const qz = Math.max(0, Math.abs(v.z) - (0.5 - r));
+        const cornerDist = Math.sqrt(qx * qx + qy * qy + qz * qz);
+
+        if (cornerDist > 0) {
+          const factor = (cornerDist - r) / cornerDist;
+          if (factor > 0) {
+            v.x -= qx * factor * Math.sign(v.x);
+            v.y -= qy * factor * Math.sign(v.y);
+            v.z -= qz * factor * Math.sign(v.z);
+          }
+        }
+
+        // 2. Multi-octave natural carbon surface displacement
+        // Macro: mould compression planes and slight face curvature
+        const macro =
+          Math.sin(v.x * 7 + 0.8) * Math.sin(v.y * 7 + 0.5) * 0.014 +
+          Math.cos(v.z * 8 + 1.2) * Math.sin(v.x * 6 - 0.4) * 0.011;
+
+        // Meso: compacted coconut shell fragment granules
+        const meso =
+          (Math.sin(v.x * 24 + v.y * 14) * Math.cos(v.z * 22 + v.x * 12) +
+            Math.sin(v.y * 28 + v.z * 18) * Math.cos(v.x * 20 - v.y * 10)) *
+          0.008;
+
+        // Micro: fine carbon porosity
+        const micro = Math.sin(v.x * 52 + v.y * 38 + v.z * 44) * 0.0035;
+
+        // Authentic corner micro-wear on one corner (giving it physical realism)
+        let chip = 0;
+        if (v.x > 0.36 && v.y > 0.36 && v.z > 0.36) {
+          chip = -0.025 * Math.min(1, (v.x - 0.36) * 10);
+        }
+
         n.copy(v).normalize();
-        v.addScaledVector(n, d);
-        p.setXYZ(i, v.x, v.y, v.z);
+        const totalDisp = macro + meso + micro + chip;
+        v.addScaledVector(n, totalDisp);
+
+        pos.setXYZ(i, v.x, v.y, v.z);
       }
+
       g.computeVertexNormals();
       return g;
     }
@@ -320,14 +511,14 @@ export function WebGLScene({
     function charMat(glow: number) {
       return new THREE.MeshStandardMaterial({
         map: T.char,
-        bumpMap: T.noise,
-        bumpScale: 3.5,
-        roughness: 0.88,
-        metalness: 0.04,
+        bumpMap: T.bump || T.char,
+        bumpScale: 1.8,
+        roughness: 0.84,
+        metalness: 0.06,
         emissive: new THREE.Color(0xffffff),
         emissiveMap: T.crack,
         emissiveIntensity: glow,
-        envMapIntensity: 0.45,
+        envMapIntensity: 0.65,
       });
     }
 
@@ -889,6 +1080,10 @@ export function WebGLScene({
         plan: document.getElementById('planner'),
       };
 
+      // Thermodynamic thermal breathing: living coals pulse with realistic heat fluctuation
+      const thermalBreath =
+        1.0 + Math.sin(t * 1.8) * 0.14 + Math.sin(t * 4.2) * 0.06;
+
       // 1. Planner Occlusion Optimization
       if (secs.plan) {
         const pr = secs.plan.getBoundingClientRect();
@@ -911,8 +1106,9 @@ export function WebGLScene({
         if (heroCnt) place(heroCnt, sh, 1, t);
         if (heroCube) {
           place(heroCube, sh, 1, t);
-          // Ember light following glowing cube
-          emberA.intensity = 1.3 + Math.sin(t * 3.0) * 0.3;
+          // Modulate emissive heat breathing
+          MAT.hero.emissiveIntensity = 0.85 * thermalBreath;
+          emberA.intensity = (1.35 + Math.sin(t * 2.8) * 0.3) * thermalBreath;
           emberA.position
             .copy(heroCube.obj.position)
             .add(new THREE.Vector3(0.18, 0.15, 0.3));
@@ -941,9 +1137,11 @@ export function WebGLScene({
             place(entItem, sc, ease(cv_) * ease(entItem.a), t);
             entItem.obj.rotation.y += (1 - entItem.a) * 0.7;
 
-            // When Shisha charcoal (Index 0 - 3D Cube) is active, boost ember warmth
+            // When Shisha charcoal (Index 0 - 3D Cube) is active, boost ember warmth & thermal breathing
             if (i === 0 && !entItem.photo) {
-              emberB.intensity = (1.4 + Math.sin(t * 3.5) * 0.35) * entItem.a;
+              MAT.cube.emissiveIntensity = 0.78 * thermalBreath;
+              emberB.intensity =
+                (1.45 + Math.sin(t * 3.2) * 0.35) * entItem.a * thermalBreath;
               emberB.position
                 .copy(entItem.obj.position)
                 .add(new THREE.Vector3(0.2, 0.16, 0.3));
