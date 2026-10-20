@@ -42,7 +42,7 @@ export const COMMODITY_ASSETS: CommodityAsset[] = [
     name: 'BBQ Hexagonal Hardwood & Coconut Charcoal',
     category: 'Extruded Hollow Resto Grade',
     hsCode: 'HS 4402.90.90',
-    image: '/img/bbq-charcoal-cutout.png',
+    image: '/img/assets/charcoal-hex.webp',
     specs: [
       { label: 'Burn Time', value: '4.5 - 5.0 Hours' },
       { label: 'Fixed Carbon', value: '> 80%' },
@@ -59,7 +59,7 @@ export const COMMODITY_ASSETS: CommodityAsset[] = [
     name: 'Sumatra Mandheling Arabica Green Coffee',
     category: 'Specialty Grade 1 Triple Picked',
     hsCode: 'HS 0901.11.10',
-    image: '/img/green-coffee-cutout.png',
+    image: '/img/assets/coffee.webp',
     specs: [
       { label: 'Screen Size', value: '17 / 18' },
       { label: 'Moisture', value: '11.5% - 12%' },
@@ -76,8 +76,8 @@ export const COMMODITY_ASSETS: CommodityAsset[] = [
     name: 'Maluku Lalpari Cloves & Kerinci Cinnamon',
     category: 'Handpicked Sun-Dried Export Spices',
     hsCode: 'HS 0907.10.00',
-    image: '/img/cinnamon-spices-cutout.png',
-    secondaryImage: '/img/cloves-spices-cutout.png',
+    image: '/img/assets/cinnamon.webp',
+    secondaryImage: '/img/assets/cloves.webp',
     secondaryName: 'Maluku Lalpari Cloves',
     specs: [
       { label: 'Eugenol Oil', value: '18% - 20%' },

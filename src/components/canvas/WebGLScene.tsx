@@ -9,6 +9,30 @@ interface WebGLSceneProps {
   processProgress: number;
 }
 
+interface PhotoData {
+  tex: THREE.Texture;
+  w: number;
+  h: number;
+}
+
+interface Entity {
+  obj: THREE.Object3D;
+  photo: boolean;
+  nx: number;
+  ny: number;
+  z: number;
+  size: number;
+  spin: number;
+  ph: number;
+  rx: number;
+  ry: number;
+  rz: number;
+  pd: number;
+  a: number;
+  fade: number;
+  delay: number;
+}
+
 export function WebGLScene({
   activeCommodityIndex,
   stageIndex,
@@ -16,7 +40,7 @@ export function WebGLScene({
 }: WebGLSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Store mutable state accessible to the RAF render loop
+  // Mutable state accessible synchronously to the RAF render loop
   const stateRef = useRef({
     activeCom: activeCommodityIndex,
     stageIdx: stageIndex,
@@ -47,12 +71,11 @@ export function WebGLScene({
         powerPreference: 'high-performance',
       });
     } catch (e) {
-      console.warn('WebGL not supported', e);
+      console.warn('WebGL initialization failed:', e);
       return;
     }
 
     renderer.setClearColor(0x000000, 0);
-    // Compatibility for three.js color space
     if ('outputColorSpace' in renderer) {
       (renderer as any).outputColorSpace = THREE.SRGBColorSpace;
     } else {
@@ -77,14 +100,14 @@ export function WebGLScene({
       };
     }
 
-    function cv(w: number, h: number) {
+    function cv(w: number, h: number): HTMLCanvasElement {
       const c = document.createElement('canvas');
       c.width = w;
       c.height = h;
       return c;
     }
 
-    function tex(c: HTMLCanvasElement, srgb: boolean) {
+    function tex(c: HTMLCanvasElement, srgb: boolean): THREE.CanvasTexture {
       const t = new THREE.CanvasTexture(c);
       if (srgb) {
         if ('colorSpace' in t) {
@@ -97,7 +120,7 @@ export function WebGLScene({
       return t;
     }
 
-    // Environment reflection
+    // 1. Studio-like reflection environment for the metal container
     try {
       const c = cv(512, 256);
       const x = c.getContext('2d');
@@ -122,28 +145,30 @@ export function WebGLScene({
         pm.dispose();
       }
     } catch {
-      // Ignore if environment creation fails
+      // Ignore fallback if environment creation fails
     }
 
-    const key = new THREE.DirectionalLight(0xffe4c8, 1.5);
-    key.position.set(-3, 4, 5);
-    scene.add(key);
+    const keyLight = new THREE.DirectionalLight(0xffe4c8, 1.5);
+    keyLight.position.set(-3, 4, 5);
+    scene.add(keyLight);
 
-    const rim = new THREE.DirectionalLight(0x9fbfff, 1.0);
-    rim.position.set(4, 1, -3);
-    scene.add(rim);
+    const rimLight = new THREE.DirectionalLight(0x9fbfff, 1.0);
+    rimLight.position.set(4, 1, -3);
+    scene.add(rimLight);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.2));
 
-    const emberA = new THREE.PointLight(0xff6a1f, 0, 7, 2);
+    const emberA = new THREE.PointLight(0xff6a1f, 0, 6, 2);
     scene.add(emberA);
-    const emberB = new THREE.PointLight(0xff6a1f, 0, 7, 2);
+    const emberB = new THREE.PointLight(0xff6a1f, 0, 6, 2);
     scene.add(emberB);
 
-    // Procedural Textures
+    // 2. Procedural Textures for 3D Container & 3D Coal Cube
     const T: Record<string, THREE.CanvasTexture> = {};
     (function () {
       const R = rng(7);
+
+      // Noise bump map
       let c = cv(256, 256);
       let x = c.getContext('2d');
       if (x) {
@@ -160,6 +185,7 @@ export function WebGLScene({
         T.noise.wrapS = T.noise.wrapT = THREE.RepeatWrapping;
       }
 
+      // Charcoal surface texture
       c = cv(512, 512);
       x = c.getContext('2d');
       if (x) {
@@ -182,6 +208,7 @@ export function WebGLScene({
         T.char = tex(c, true);
       }
 
+      // Glowing Ember heat cracks texture
       c = cv(512, 512);
       x = c.getContext('2d');
       if (x) {
@@ -217,35 +244,22 @@ export function WebGLScene({
         T.crack = tex(c, true);
       }
 
-      c = cv(256, 256);
-      x = c.getContext('2d');
-      if (x) {
-        x.fillStyle = '#8a4a22';
-        x.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 260; i++) {
-          const l = R() > 0.5 ? 0 : 255;
-          x.fillStyle = `rgba(${l},${l ? 200 : 0},${l ? 150 : 0},${0.05 + R() * 0.12})`;
-          x.fillRect(R() * 256, 0, 1 + R() * 4, 256);
-        }
-        T.cin = tex(c, true);
-        T.cin.wrapS = T.cin.wrapT = THREE.RepeatWrapping;
-      }
-
+      // Shipping container corrugated side wall with Nusantara branding
       c = cv(1024, 256);
       x = c.getContext('2d');
       if (x) {
         x.fillStyle = '#2a2d32';
         x.fillRect(0, 0, 1024, 256);
-        for (let i = 0; i < 1024; i += 16) {
-          x.fillStyle = '#353940';
-          x.fillRect(i, 14, 8, 228);
-          x.fillStyle = '#1e2024';
-          x.fillRect(i + 8, 14, 8, 228);
+        for (let i = 0; i < 1024; i += 32) {
+          x.fillStyle = '#383c43';
+          x.fillRect(i, 14, 16, 228);
+          x.fillStyle = '#212328';
+          x.fillRect(i + 16, 14, 16, 228);
         }
         x.fillStyle = '#3d4249';
         x.fillRect(0, 0, 1024, 14);
         x.fillRect(0, 242, 1024, 14);
-        x.fillStyle = 'rgba(232,230,224,0.88)';
+        x.fillStyle = 'rgba(232,230,224,0.9)';
         x.font = '600 46px Geist, Arial, sans-serif';
         x.fillText('NUSANTARA ORIGIN', 70, 150);
         x.fillStyle = '#E8742A';
@@ -253,6 +267,7 @@ export function WebGLScene({
         T.side = tex(c, true);
       }
 
+      // Shipping container lock door
       c = cv(256, 256);
       x = c.getContext('2d');
       if (x) {
@@ -274,6 +289,7 @@ export function WebGLScene({
       }
     })();
 
+    // 3. 3D Cube Geometry (Coconut charcoal briquette cube 25mm)
     function sn(x: number, y: number, z: number) {
       return (
         (Math.sin(x * 5 + 1.3) * Math.sin(y * 6 + 0.7) +
@@ -315,411 +331,441 @@ export function WebGLScene({
       });
     }
 
-    function hexGeo() {
-      const s = new THREE.Shape();
-      for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * 6.283 + 0.5236;
-        if (i) s.lineTo(Math.cos(a) * 0.5, Math.sin(a) * 0.5);
-        else s.moveTo(Math.cos(a) * 0.5, Math.sin(a) * 0.5);
-      }
-      const h = new THREE.Path();
-      h.absarc(0, 0, 0.14, 0, 6.283, true);
-      s.holes.push(h);
-      const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.8,
-        bevelEnabled: true,
-        bevelThickness: 0.04,
-        bevelSize: 0.035,
-        bevelSegments: 2,
-        curveSegments: 18,
-      });
-      g.center();
-      g.scale(0.8, 0.8, 0.8);
-      return g;
-    }
-
-    function beanGeo() {
-      const g = new THREE.SphereGeometry(0.5, 36, 28);
-      const p = g.attributes.position;
-      for (let i = 0; i < p.count; i++) {
-        let x = p.getX(i) * 1.0;
-        const y = p.getY(i) * 0.66;
-        let z = p.getZ(i) * 0.8;
-        if (z > 0) {
-          const yc = 0.05 * Math.sin(x * 7);
-          const dy = y - yc;
-          const depth =
-            0.09 *
-            Math.exp(-(dy * dy) / (2 * 0.04 * 0.04)) *
-            Math.max(0, 1 - Math.pow(x / 0.5, 2));
-          z -= depth;
-        }
-        p.setXYZ(i, x, y, z);
-      }
-      g.computeVertexNormals();
-      return g;
-    }
-
     const GEO = {
       cube: cubeGeo(),
-      hex: hexGeo(),
-      bean: beanGeo(),
-      quill: new THREE.CylinderGeometry(0.07, 0.07, 1, 24, 1, true),
-      quillIn: new THREE.CylinderGeometry(0.04, 0.04, 1, 16, 1, true),
-      twine: new THREE.TorusGeometry(0.17, 0.014, 8, 36),
-      head: new THREE.SphereGeometry(0.035, 12, 10),
-      stem: new THREE.CylinderGeometry(0.014, 0.005, 0.2, 10),
-      sepal: new THREE.ConeGeometry(0.012, 0.05, 6),
     };
 
     const MAT = {
       cube: charMat(0.55),
       hero: charMat(0.7),
       proc: charMat(0.1),
-      hex: charMat(0.35),
-      bean: new THREE.MeshStandardMaterial({
-        color: 0x93ad6c,
-        roughness: 0.5,
-        metalness: 0.0,
-        bumpMap: T.noise,
-        bumpScale: 0.6,
-        envMapIntensity: 0.9,
-      }),
-      quill: new THREE.MeshStandardMaterial({
-        map: T.cin,
-        bumpMap: T.cin,
-        bumpScale: 1.5,
-        roughness: 0.75,
-        metalness: 0,
-        side: THREE.DoubleSide,
-        envMapIntensity: 0.5,
-      }),
-      quillIn: new THREE.MeshStandardMaterial({
-        color: 0x4a2410,
-        roughness: 0.9,
-        side: THREE.DoubleSide,
-      }),
-      twine: new THREE.MeshStandardMaterial({
-        color: 0xc9b27a,
-        roughness: 0.9,
-      }),
-      clove: new THREE.MeshStandardMaterial({
-        color: 0x4a2314,
-        roughness: 0.55,
-        envMapIntensity: 0.7,
-      }),
-      cnt: [
-        new THREE.MeshStandardMaterial({
-          map: T.door,
-          roughness: 0.55,
-          metalness: 0.7,
-        }),
-        new THREE.MeshStandardMaterial({
-          map: T.door,
-          roughness: 0.55,
-          metalness: 0.7,
-        }),
-        new THREE.MeshStandardMaterial({
-          map: T.side,
-          roughness: 0.55,
-          metalness: 0.7,
-        }),
-        new THREE.MeshStandardMaterial({
-          color: 0x1b1c1f,
-          roughness: 0.8,
-          metalness: 0.5,
-        }),
-        new THREE.MeshStandardMaterial({
-          map: T.side,
-          roughness: 0.55,
-          metalness: 0.7,
-        }),
-        new THREE.MeshStandardMaterial({
-          map: T.side,
-          roughness: 0.55,
-          metalness: 0.7,
-        }),
-      ],
     };
 
-    function mesh(g: THREE.BufferGeometry, m: THREE.Material | THREE.Material[]) {
-      return new THREE.Mesh(g, m);
-    }
-
-    function mkCube(m: THREE.Material) {
-      return mesh(GEO.cube, m);
-    }
-    function mkHex() {
-      return mesh(GEO.hex, MAT.hex);
-    }
-    function mkBean() {
-      return mesh(GEO.bean, MAT.bean);
-    }
-
-    function mkClove() {
-      const g = new THREE.Group();
-      const s = mesh(GEO.stem, MAT.clove);
-      const h = mesh(GEO.head, MAT.clove);
-      h.position.y = 0.11;
-      g.add(s, h);
-      for (let i = 0; i < 4; i++) {
-        const c = mesh(GEO.sepal, MAT.clove);
-        const a = (i / 4) * 6.283;
-        c.position.set(Math.cos(a) * 0.03, 0.095, Math.sin(a) * 0.03);
-        c.rotation.set(Math.sin(a) * 0.9, 0, -Math.cos(a) * 0.9);
-        g.add(c);
-      }
-      g.scale.setScalar(3.4);
-      return g;
-    }
-
-    function mkBundle() {
-      const g = new THREE.Group();
-      const R = rng(11);
-      const pos = [
-        [0, 0],
-        [0.11, 0.05],
-        [-0.11, 0.05],
-        [0.055, -0.1],
-        [-0.055, -0.1],
-        [0, 0.14],
-      ];
-      pos.forEach((p) => {
-        const q = new THREE.Group();
-        const len = 0.9 + R() * 0.18;
-        const a = mesh(GEO.quill, MAT.quill);
-        a.scale.y = len;
-        const b = mesh(GEO.quillIn, MAT.quillIn);
-        b.scale.y = len * 0.98;
-        q.add(a, b);
-        q.position.set(p[0], 0, p[1]);
-        q.rotation.set(
-          Math.PI / 2 + (R() - 0.5) * 0.08,
-          0,
-          (R() - 0.5) * 0.08
-        );
-        g.add(q);
+    function cm(t: THREE.CanvasTexture) {
+      return new THREE.MeshStandardMaterial({
+        map: t,
+        bumpMap: t,
+        bumpScale: 0.8,
+        roughness: 0.55,
+        metalness: 0.6,
       });
-      const t = mesh(GEO.twine, MAT.twine);
-      t.rotation.y = Math.PI / 2;
-      t.position.set(0, 0.02, 0.0);
-      t.scale.set(1, 1.15, 1.15);
-      const t2 = t.clone();
-      t2.position.x = 0.2;
-      g.add(t, t2);
-      g.scale.setScalar(1.0);
-      return g;
     }
+
+    const cntMats = [
+      cm(T.door),
+      cm(T.door),
+      cm(T.side),
+      new THREE.MeshStandardMaterial({
+        color: 0x1b1c1f,
+        roughness: 0.8,
+        metalness: 0.5,
+      }),
+      cm(T.side),
+      cm(T.side),
+    ];
 
     function mkContainer() {
       const g = new THREE.Group();
-      const b = mesh(new THREE.BoxGeometry(1, 0.26, 0.26), MAT.cnt);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(1, 0.26, 0.26), cntMats);
       g.add(b);
-      const edge = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(1.004, 0.264, 0.264)),
-        new THREE.LineBasicMaterial({ color: 0x4a4f57 })
+      g.add(
+        new THREE.LineSegments(
+          new THREE.EdgesGeometry(new THREE.BoxGeometry(1.004, 0.264, 0.264)),
+          new THREE.LineBasicMaterial({ color: 0x4a4f57 })
+        )
       );
-      g.add(edge);
       return g;
     }
 
-    function mkBeanCluster() {
+    function mkCube(m: THREE.Material) {
+      return new THREE.Mesh(GEO.cube, m);
+    }
+
+    // 4. Photographic Shader Planes (from updated template code)
+    const VERT =
+      'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+
+    const FRAG = [
+      'uniform sampler2D map; uniform vec2 texel; uniform vec2 uTilt; uniform vec2 uSize; uniform vec2 uPan; uniform vec3 uGlow;',
+      'uniform float uGlowAmt; uniform float uExp; uniform float uOp; uniform float uRound; uniform float uVig; uniform float uZoom;',
+      'varying vec2 vUv;',
+      'void main(){',
+      '  vec2 uv = (vUv - 0.5) / uZoom + 0.5 + uPan;',
+      '  vec3 c0 = texture2D(map, uv).rgb;',
+      '  float l0 = dot(c0, vec3(0.299, 0.587, 0.114));',
+      '  uv += uTilt * (l0 - 0.5) * 0.02;',
+      '  vec4 c = texture2D(map, uv);',
+      '  float a = c.a;',
+      '  vec2 o = texel * 2.0;',
+      '  float am = a;',
+      '  am = min(am, texture2D(map, uv + vec2(o.x, 0.0)).a);',
+      '  am = min(am, texture2D(map, uv - vec2(o.x, 0.0)).a);',
+      '  am = min(am, texture2D(map, uv + vec2(0.0, o.y)).a);',
+      '  am = min(am, texture2D(map, uv - vec2(0.0, o.y)).a);',
+      '  float edge = clamp(a - am, 0.0, 1.0);',
+      '  vec3 col = c.rgb;',
+      '  float lum = dot(col, vec3(0.299, 0.587, 0.114));',
+      '  col = mix(vec3(lum), col, 1.06);',
+      '  col = pow(col, vec3(1.1)) * uExp;',
+      '  col *= mix(0.78, 1.08, clamp(vUv.y * 0.65 + (1.0 - vUv.x) * 0.35, 0.0, 1.0));',
+      '  col *= 1.0 - 0.6 * edge;',
+      '  col += uGlow * edge * uGlowAmt;',
+      '  float m = 1.0;',
+      '  if (uRound > 0.0) {',
+      '    vec2 p = (vUv - 0.5) * uSize; vec2 q = abs(p) - uSize * 0.5 + vec2(uRound);',
+      '    float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uRound;',
+      '    m = 1.0 - smoothstep(-0.004, 0.004, d);',
+      '  }',
+      '  float vg = 1.0;',
+      '  if (uVig > 0.0) { vec2 vq = abs(vUv - 0.5) * 2.0; vg = 1.0 - uVig * smoothstep(0.55, 1.05, max(vq.x, vq.y)); }',
+      '  gl_FragColor = vec4(col * vg, a * m * uOp);',
+      '}',
+    ].join('\n');
+
+    const GLOW = (function () {
+      const c = cv(128, 128);
+      const x = c.getContext('2d');
+      if (!x) return null;
+      const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(255,255,255,0.9)');
+      g.addColorStop(0.35, 'rgba(255,255,255,0.28)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g;
+      x.fillRect(0, 0, 128, 128);
+      return tex(c, false);
+    })();
+
+    const PHOTO: Record<string, PhotoData> = {};
+
+    interface PhotoOptions {
+      glow?: number;
+      glowAmt?: number;
+      halo?: number;
+      haloOp?: number;
+      haloSize?: number;
+      exp?: number;
+      round?: number;
+      vig?: number;
+    }
+
+    function mkPhoto(name: string, o: PhotoOptions = {}): THREE.Group | null {
+      const ph = PHOTO[name];
+      if (!ph) return null;
+      const asp = ph.w / ph.h;
+      const w = asp >= 1 ? 1 : asp;
+      const h = asp >= 1 ? 1 / asp : 1;
+
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          map: { value: ph.tex },
+          texel: { value: new THREE.Vector2(1 / ph.w, 1 / ph.h) },
+          uTilt: { value: new THREE.Vector2() },
+          uSize: { value: new THREE.Vector2(w, h) },
+          uPan: { value: new THREE.Vector2() },
+          uGlow: { value: new THREE.Color(o.glow || 0xffffff) },
+          uGlowAmt: { value: o.glowAmt || 0 },
+          uExp: { value: o.exp || 1 },
+          uOp: { value: 0 },
+          uRound: { value: o.round || 0 },
+          uVig: { value: o.vig || 0 },
+          uZoom: { value: 1 },
+        },
+        vertexShader: VERT,
+        fragmentShader: FRAG,
+        transparent: true,
+        depthWrite: false,
+      });
+
       const g = new THREE.Group();
-      const R = rng(5);
-      for (let i = 0; i < 6; i++) {
-        const b = mkBean();
-        const a = (i / 6) * 6.283;
-        b.position.set(
-          Math.cos(a) * 0.3,
-          Math.sin(a * 1.3) * 0.18,
-          Math.sin(a) * 0.22
+      g.add(new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat));
+
+      let halo: THREE.Mesh | null = null;
+      if (o.halo && GLOW) {
+        halo = new THREE.Mesh(
+          new THREE.PlaneGeometry(1, 1),
+          new THREE.MeshBasicMaterial({
+            map: GLOW,
+            color: o.halo,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            opacity: 0,
+          })
         );
-        b.rotation.set(R() * 3, R() * 3, R() * 3);
-        b.scale.setScalar(0.55);
-        g.add(b);
+        halo.position.z = -0.02;
+        const hs = Math.max(w, h) * (o.haloSize || 1.7);
+        halo.scale.set(hs, hs, 1);
+        g.add(halo);
       }
+
+      g.userData = { mat, halo, haloOp: o.haloOp || 0.25 };
       return g;
     }
 
-    function mkSpices() {
-      const g = new THREE.Group();
-      const b = mkBundle();
-      b.scale.setScalar(0.95);
-      g.add(b);
-      const R = rng(3);
-      for (let i = 0; i < 7; i++) {
-        const c = mkClove();
-        const a = (i / 7) * 6.283;
-        c.position.set(
-          Math.cos(a) * 0.42,
-          -0.2 + R() * 0.1,
-          Math.sin(a) * 0.3
-        );
-        c.rotation.set(R() * 3, R() * 3, R() * 3);
-        c.scale.setScalar(2.4);
-        g.add(c);
-      }
-      return g;
-    }
-
-    interface Entity {
-      obj: THREE.Object3D;
-      nx: number;
-      ny: number;
-      z: number;
-      size: number;
-      spin: number;
-      ph: number;
-      rx: number;
-      ry: number;
-      rz: number;
-      pd: number;
-      a: number;
+    function applyPhoto(obj: THREE.Object3D, op: number, tx: number, ty: number) {
+      const parts: THREE.Object3D[] = obj.userData.parts || [obj];
+      parts.forEach((p) => {
+        const d = p.userData;
+        if (!d?.mat) return;
+        d.mat.uniforms.uOp.value = op;
+        d.mat.uniforms.uTilt.value.set(tx, ty);
+        if (d.halo) d.halo.material.opacity = d.haloOp * op;
+      });
     }
 
     function ent(obj: THREE.Object3D, o: Partial<Entity> = {}): Entity {
-      const e: Entity = {
+      scene.add(obj);
+      return {
         obj,
+        photo: !!o.photo,
         nx: o.nx || 0,
         ny: o.ny || 0,
         z: o.z || 0,
         size: o.size || 1,
-        spin: o.spin == null ? 0.12 : o.spin,
+        spin: o.spin || 0,
         ph: o.ph || 0,
         rx: o.rx || 0,
         ry: o.ry || 0,
         rz: o.rz || 0,
-        pd: o.pd == null ? 0.2 : o.pd,
+        pd: o.pd == null ? 0.3 : o.pd,
         a: 0,
+        fade: 0,
+        delay: o.delay || 0,
       };
-      scene.add(obj);
-      return e;
     }
 
-    // Hero cluster
-    const heroCube = ent(mkCube(MAT.hero), {
-      nx: 0.06,
-      ny: 0.1,
-      z: 0.5,
-      size: 0.62,
-      spin: 0.16,
-      rx: 0.4,
-      rz: 0.2,
+    // 5. Assets Mapping from public/img/assets/
+    const ASSETS: Record<string, string> = {
+      charcoal: '/img/assets/charcoal-hex.webp',
+      coffee: '/img/assets/coffee.webp',
+      cinnamon: '/img/assets/cinnamon.webp',
+      cloves: '/img/assets/cloves.webp',
+      rack: '/img/assets/drying-rack.webp',
+    };
+
+    const narrow = typeof window !== 'undefined' && window.innerWidth < 720;
+    const S = narrow ? 0.74 : 1;
+
+    // Entities collections
+    const hero: Entity[] = [];
+    const com: (Entity | null)[] = [];
+    let rackEnt: Entity | null = null;
+    let closeCnt: Entity | null = null;
+    let heroCnt: Entity | null = null;
+    let heroCube: Entity | null = null;
+    let built = false;
+
+    // Create 3D Container & 3D Charcoal Cube (Retained as requested!)
+    heroCnt = ent(mkContainer(), {
+      nx: -0.04,
+      ny: -0.42,
+      z: -2.0,
+      size: 1.05 * S,
+      ry: -0.55,
+      rx: 0.3,
+      ph: 1.1,
+      pd: 0.08,
+      delay: 0.1,
+    });
+    heroCnt.obj.visible = false;
+
+    // Centerpiece 3D Glowing Coal Cube in Hero
+    heroCube = ent(mkCube(MAT.hero), {
+      nx: 0.02,
+      ny: 0.04,
+      z: 0.3,
+      size: 0.82 * S,
+      rz: -0.05,
+      ry: -0.15,
       ph: 0.5,
       pd: 0.35,
+      delay: 0.4,
     });
+    heroCube.obj.visible = false;
 
-    const hero: Entity[] = [
-      ent(mkContainer(), {
-        nx: 0.02,
-        ny: -0.3,
-        z: -1.4,
-        size: 1.15,
-        spin: 0.0,
-        rx: 0.12,
-        ry: -0.5,
-        ph: 1.1,
-        pd: 0.08,
-      }),
-      heroCube,
-      ent(mkBundle(), {
-        nx: -0.32,
-        ny: 0.34,
-        z: 0.3,
-        size: 0.55,
-        spin: 0.05,
-        ry: 0.3,
-        rz: 0.7,
-        ph: 2.0,
-        pd: 0.4,
-      }),
-      ent(mkBean(), {
-        nx: -0.34,
-        ny: -0.05,
-        z: 0.9,
-        size: 0.2,
-        spin: 0.3,
-        ph: 3.0,
-        pd: 0.5,
-      }),
-      ent(mkBean(), {
-        nx: 0.4,
-        ny: -0.02,
-        z: 0.6,
-        size: 0.17,
-        spin: -0.25,
-        rx: 1,
-        ph: 4.0,
-        pd: 0.45,
-      }),
-      ent(mkBean(), {
-        nx: 0.34,
-        ny: 0.4,
-        z: 1.2,
-        size: 0.24,
-        spin: 0.2,
-        rz: 2,
-        ph: 5.0,
-        pd: 0.6,
-      }),
-      ent(mkBean(), {
-        nx: -0.06,
-        ny: 0.44,
-        z: -0.2,
-        size: 0.15,
-        spin: 0.3,
-        rx: 2,
-        ph: 6.0,
-        pd: 0.3,
-      }),
-      ent(mkClove(), {
-        nx: 0.28,
-        ny: 0.22,
-        z: 0.4,
-        size: 0.45,
-        spin: 0.4,
-        rz: 1,
-        ph: 1.0,
-        pd: 0.5,
-      }),
-      ent(mkClove(), {
-        nx: -0.2,
-        ny: 0.1,
-        z: 1.0,
-        size: 0.38,
-        spin: -0.3,
-        rz: 2,
-        ph: 2.0,
-        pd: 0.55,
-      }),
-    ];
-
-    // Commodities Stage
-    const com: Entity[] = [
-      ent(mkCube(MAT.cube), { size: 0.7, spin: 0.2, rx: 0.4, rz: 0.15 }),
-      ent(mkHex(), { size: 0.75, spin: 0.2, rx: 0.9 }),
-      ent(mkBeanCluster(), { size: 0.95, spin: 0.2, rx: 0.3 }),
-      ent(mkSpices(), { size: 0.8, spin: 0.18, rx: 0.5 }),
-    ];
-    com.forEach((e) => {
-      e.obj.visible = false;
-    });
-
-    const procCube = ent(mkCube(MAT.proc), {
-      size: 0.78,
-      spin: 0.14,
-      rx: 0.4,
-      rz: 0.15,
-    });
-    const closeCnt = ent(mkContainer(), {
+    closeCnt = ent(mkContainer(), {
       size: 1.5,
-      spin: 0.0,
       rx: 0.2,
       ry: -0.6,
     });
+    closeCnt.obj.visible = false;
 
-    let vw = window.innerWidth;
-    let vh = window.innerHeight;
+    function build() {
+      const P = function (n: string, o: PhotoOptions, e: Partial<Entity>) {
+        const g = mkPhoto(n, o);
+        if (!g) return null;
+        return ent(g, { ...e, photo: true });
+      };
+
+      let e: Entity | null;
+
+      // Hero floating photo planes
+      if (
+        (e = P(
+          'cinnamon',
+          { glow: 0xffa860, glowAmt: 0.14, exp: 1.0 },
+          {
+            nx: -0.32,
+            ny: 0.38,
+            z: 0.9,
+            size: 0.58 * S,
+            rz: -0.3,
+            ry: 0.2,
+            ph: 2.0,
+            pd: 0.5,
+            delay: 0.75,
+          }
+        ))
+      )
+        hero.push(e);
+
+      if (
+        (e = P(
+          'coffee',
+          { glow: 0xc9d99a, glowAmt: 0.14, exp: 1.0 },
+          {
+            nx: 0.38,
+            ny: 0.34,
+            z: 1.0,
+            size: 0.44 * S,
+            rz: 0.3,
+            ph: 3.0,
+            pd: 0.55,
+            delay: 0.95,
+          }
+        ))
+      )
+        hero.push(e);
+
+      if (
+        !narrow &&
+        (e = P(
+          'cloves',
+          { glow: 0xffa860, glowAmt: 0.14, exp: 1.05 },
+          {
+            nx: -0.02,
+            ny: 0.47,
+            z: 1.1,
+            size: 0.3,
+            rz: 0.5,
+            ry: -0.2,
+            ph: 4.0,
+            pd: 0.45,
+            delay: 1.1,
+          }
+        ))
+      )
+        hero.push(e);
+
+      if (heroCnt) heroCnt.obj.visible = true;
+      if (heroCube) heroCube.obj.visible = true;
+
+      // Commodities Section (Corresponding to index 0..3):
+      // Index 0: 3D Asset Cube Coal (Retained! Genuine 3D glowing cube 25mm)
+      const comCube = ent(mkCube(MAT.cube), {
+        size: 0.88,
+        ry: -0.15,
+        rz: -0.04,
+        ph: 1.0,
+        pd: 0.3,
+      });
+      com.push(comCube);
+
+      // Index 1: BBQ Charcoal Hexagonal photo-plane
+      if (
+        (e = P(
+          'charcoal',
+          {
+            glow: 0xff6a1f,
+            glowAmt: 0.5,
+            halo: 0xff6a1f,
+            haloOp: 0.3,
+            haloSize: 1.5,
+            exp: 1.75,
+          },
+          { size: 0.98, ry: -0.1, rz: -0.04, ph: 1.0, pd: 0.3 }
+        ))
+      )
+        com.push(e);
+      else com.push(null);
+
+      // Index 2: Green Coffee Beans photo-plane
+      if (
+        (e = P(
+          'coffee',
+          { glow: 0xc9d99a, glowAmt: 0.1 },
+          { size: 0.9, rz: 0.15, ph: 2.0, pd: 0.3 }
+        ))
+      )
+        com.push(e);
+      else com.push(null);
+
+      // Index 3: Spices Composite (Cinnamon + Cloves photo-planes)
+      const a = mkPhoto('cinnamon', { glow: 0xffa860, glowAmt: 0.1, exp: 0.95 });
+      const b = mkPhoto('cloves', { glow: 0xffa860, glowAmt: 0.1, exp: 0.95 });
+      if (a && b) {
+        const g = new THREE.Group();
+        a.position.set(-0.1, 0.12, 0);
+        a.scale.setScalar(0.92);
+        a.rotation.z = -0.18;
+        b.position.set(0.2, -0.26, 0.05);
+        b.scale.setScalar(0.5);
+        b.rotation.z = 0.35;
+        g.add(a, b);
+        g.userData = { parts: [a, b] };
+        e = ent(g, { photo: true, size: 0.98, ph: 3.0, pd: 0.3 });
+        com.push(e);
+      } else {
+        com.push(null);
+      }
+
+      com.forEach((c) => {
+        if (c) c.obj.visible = false;
+      });
+
+      // Process Section: Drying Rack with reactive zoom & exposure
+      const rp = mkPhoto('rack', { round: 0.03, vig: 0.45, exp: 1.1 });
+      if (rp) {
+        rackEnt = ent(rp, { photo: true, size: 1.0, ry: 0.06, ph: 0.8, pd: 0.2 });
+        rackEnt.obj.visible = false;
+      }
+
+      built = true;
+    }
+
+    // Load textures
+    const keys = Object.keys(ASSETS);
+    let pending = keys.length;
+    const loader = new THREE.TextureLoader();
+
+    function onDone() {
+      pending--;
+      if (pending === 0) {
+        try {
+          build();
+        } catch (err) {
+          console.warn('Failed to build 3D photo scene:', err);
+        }
+      }
+    }
+
+    keys.forEach((k) => {
+      loader.load(
+        ASSETS[k],
+        (t) => {
+          t.premultiplyAlpha = false;
+          t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          PHOTO[k] = { tex: t, w: t.image.width || 512, h: t.image.height || 512 };
+          onDone();
+        },
+        undefined,
+        onDone
+      );
+    });
+
+    // Viewport & Pointer math
+    let vw = 1;
+    let vh = 1;
     let visH = 1;
     let visW = 1;
     const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -737,15 +783,15 @@ export function WebGLScene({
     resize();
     window.addEventListener('resize', resize);
 
-    const onPointerMove = (e: PointerEvent) => {
+    const onPointerMove = (e: MouseEvent) => {
       ptr.tx = (e.clientX / vw - 0.5) * 2;
       ptr.ty = (e.clientY / vh - 0.5) * 2;
     };
     window.addEventListener('pointermove', onPointerMove, { passive: true });
 
-    function slotInfo(el: HTMLElement | null) {
+    function slotInfo(el: Element | null) {
       if (!el) {
-        return { cx: 0, cy: 0, w: 0, h: 0, top: 9999, bottom: 9999 };
+        return { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
       }
       const r = el.getBoundingClientRect();
       return {
@@ -758,15 +804,21 @@ export function WebGLScene({
       };
     }
 
-    function clamp(v: number, a: number, b: number) {
-      return Math.min(b, Math.max(a, v));
-    }
     function ease(t: number) {
-      t = clamp(t, 0, 1);
-      return t * t * (3 - 2 * t);
+      const c = Math.min(1, Math.max(0, t));
+      return c * c * (3 - 2 * c);
     }
 
-    function place(e: Entity, s: any, vis: number, t: number, spinMul = 1) {
+    function secVis(r: DOMRect) {
+      return ease((vh - r.top) / (vh * 0.6)) * ease(r.bottom / (vh * 0.6));
+    }
+
+    let dt = 0.016;
+    let lastT = 0;
+    const rackExp = [0.9, 1.0, 1.3, 1.2, 1.0];
+    let rackExpNow = 0.9;
+
+    function place(e: Entity, s: ReturnType<typeof slotInfo>, vis: number, t: number) {
       const f = (D - e.z) / D;
       const sx = s.cx + e.nx * s.w;
       const sy = s.cy + e.ny * s.h;
@@ -775,117 +827,175 @@ export function WebGLScene({
       const unit = (Math.min(s.w, s.h) / vh) * visH;
       const k = reduce ? 0 : 1;
 
+      if (t > e.delay && e.fade < 1) {
+        e.fade = Math.min(1, e.fade + (reduce ? 1 : dt / 0.9));
+      }
+
       e.obj.position.set(
-        X + ptr.x * e.pd * 0.4,
-        Y - ptr.y * e.pd * 0.25 + Math.sin(t * 0.7 + e.ph) * 0.05 * k,
+        X + ptr.x * e.pd * 0.3,
+        Y - ptr.y * e.pd * 0.2 + Math.sin(t * 0.7 + e.ph) * 0.04 * k,
         e.z
       );
-      e.obj.scale.setScalar(Math.max(0.0001, e.size * unit * vis));
-      e.obj.rotation.set(
-        e.rx + Math.sin(t * 0.4 + e.ph) * 0.12 * k + ptr.y * 0.18,
-        e.ry + t * e.spin * k * (spinMul || 1) + ptr.x * 0.35,
-        e.rz
-      );
+
+      if (e.photo) {
+        e.obj.scale.setScalar(Math.max(0.0001, e.size * unit * (0.92 + 0.08 * vis)));
+        e.obj.rotation.set(
+          e.rx - ptr.y * 0.16 + Math.sin(t * 0.45 + e.ph) * 0.05 * k,
+          e.ry + ptr.x * 0.28 + Math.sin(t * 0.33 + e.ph) * 0.1 * k,
+          e.rz + Math.sin(t * 0.5 + e.ph) * 0.03 * k
+        );
+        applyPhoto(e.obj, vis * e.fade, ptr.x * e.pd * 2, -ptr.y * e.pd * 2);
+      } else {
+        // 3D Geometry (Container & Coal Cube)
+        e.obj.scale.setScalar(Math.max(0.0001, e.size * unit * vis * (e.fade > 0 ? 1 : 0)));
+        e.obj.rotation.set(
+          e.rx + Math.sin(t * 0.4 + e.ph) * 0.06 * k + ptr.y * 0.12,
+          e.ry + Math.sin(t * 0.3 + e.ph) * 0.12 * k + ptr.x * 0.3,
+          e.rz
+        );
+      }
     }
 
-    function secVis(r: DOMRect | null) {
-      if (!r) return 0;
-      return ease((vh - r.top) / (vh * 0.6)) * ease(r.bottom / (vh * 0.6));
-    }
+    let animationId: number;
 
-    const glowTargets = [0.12, 0.2, 0.35, 1.0, 0.5];
-    let procGlow = 0.12;
+    const renderLoop = (timeMs: number) => {
+      animationId = requestAnimationFrame(renderLoop);
+      const t = reduce ? 1.2 : timeMs / 1000;
+      dt = Math.min(0.1, Math.max(0.001, t - lastT));
+      lastT = t;
 
-    let animId: number;
+      const kp = 1 - Math.exp(-dt * 4);
+      ptr.x += (ptr.tx - ptr.x) * kp;
+      ptr.y += (ptr.ty - ptr.y) * kp;
 
-    const render = (ms: number) => {
-      animId = requestAnimationFrame(render);
-      if (document.hidden) return;
+      const slots = {
+        hero: document.getElementById('slot-hero'),
+        com: document.getElementById('slot-com'),
+        proc: document.getElementById('slot-proc'),
+        close: document.getElementById('slot-close'),
+      };
 
-      const t = reduce ? 1.2 : ms / 1000;
-      ptr.x += (ptr.tx - ptr.x) * 0.06;
-      ptr.y += (ptr.ty - ptr.y) * 0.06;
+      const secs = {
+        com: document.getElementById('commodities'),
+        proc: document.getElementById('process'),
+        close: document.getElementById('contact'),
+        plan: document.getElementById('planner'),
+      };
 
-      const planSec = document.getElementById('planner');
-      if (planSec) {
-        const pr = planSec.getBoundingClientRect();
+      // 1. Planner Occlusion Optimization
+      if (secs.plan) {
+        const pr = secs.plan.getBoundingClientRect();
         if (pr.top <= 0 && pr.bottom >= vh) {
-          // Pause rendering when planner paper band fills viewport
+          // Completely covered by light paper band
           return;
         }
       }
 
-      // Hero Slot
-      const heroSlotEl = document.getElementById('slot-hero');
-      const sh = slotInfo(heroSlotEl);
+      // 2. Hero Cluster (3D Container + 3D Glowing Coal Cube + Floating Photo Planes)
+      const sh = slotInfo(slots.hero);
       const heroOn = sh.bottom > -vh * 0.5 && sh.top < vh * 1.2;
-      hero.forEach((e) => {
-        e.obj.visible = heroOn;
-        if (heroOn) place(e, sh, 1, t);
-      });
-      emberA.intensity = heroOn ? 2.2 : 0;
-      if (heroOn) {
-        emberA.position.set(
-          heroCube.obj.position.x,
-          heroCube.obj.position.y + 0.2,
-          1.6
-        );
-      }
-
-      // Commodities Slot: Procedural meshes disabled in favor of real documentary macro photography
-      com.forEach((e) => {
-        e.obj.visible = false;
+      if (heroCnt) heroCnt.obj.visible = heroOn && built;
+      if (heroCube) heroCube.obj.visible = heroOn && built;
+      hero.forEach((entItem) => {
+        entItem.obj.visible = heroOn;
       });
 
-      // Process Slot
-      const procSec = document.getElementById('process');
-      const procSlotEl = document.getElementById('slot-proc');
-      const rp = procSec ? procSec.getBoundingClientRect() : null;
-      const pv = secVis(rp);
-      const sp = slotInfo(procSlotEl);
-
-      procCube.obj.visible = pv > 0.001;
-      if (pv > 0.001) {
-        const targetGlow = glowTargets[stateRef.current.stageIdx] || 0.12;
-        procGlow += (targetGlow - procGlow) * 0.06;
-        MAT.proc.emissiveIntensity = procGlow;
-        place(procCube, sp, pv, t, 1 + stateRef.current.procP * 4);
-        emberB.intensity = procGlow * 2.4 * pv;
-        emberB.position.set(
-          procCube.obj.position.x - 0.4,
-          procCube.obj.position.y + 0.3,
-          1.6
-        );
-      } else {
-        emberB.intensity = 0;
+      if (heroOn && built) {
+        if (heroCnt) place(heroCnt, sh, 1, t);
+        if (heroCube) {
+          place(heroCube, sh, 1, t);
+          // Ember light following glowing cube
+          emberA.intensity = 1.2 + Math.sin(t * 3.0) * 0.3;
+          emberA.position
+            .copy(heroCube.obj.position)
+            .add(new THREE.Vector3(0.2, 0.2, 0.4));
+        }
+        hero.forEach((entItem) => {
+          place(entItem, sh, 1, t);
+        });
       }
 
-      // Closing Slot
-      const closeSec = document.getElementById('contact');
-      const closeSlotEl = document.getElementById('slot-close');
-      const rcl = closeSec ? closeSec.getBoundingClientRect() : null;
-      const cvis = secVis(rcl);
-      const scl = slotInfo(closeSlotEl);
+      // 3. Commodities Showcase (#slot-com)
+      if (secs.com && slots.com) {
+        const rc = secs.com.getBoundingClientRect();
+        const cv_ = secVis(rc);
+        const sc = slotInfo(slots.com);
+        const currentActive = stateRef.current.activeCom;
 
-      closeCnt.obj.visible = cvis > 0.001;
-      if (cvis > 0.001) {
-        place(closeCnt, scl, cvis, t);
-        closeCnt.obj.rotation.y =
-          -0.6 + Math.sin(t * 0.3) * 0.5 + ptr.x * 0.3;
+        com.forEach((entItem, i) => {
+          if (!entItem) return;
+          const target = i === currentActive ? 1 : 0;
+          entItem.a += (target - entItem.a) * (1 - Math.exp(-dt * 8));
+          const show = cv_ > 0.001 && entItem.a > 0.005;
+          entItem.obj.visible = show;
+
+          if (show) {
+            entItem.fade = 1;
+            place(entItem, sc, ease(cv_) * ease(entItem.a), t);
+            entItem.obj.rotation.y += (1 - entItem.a) * 0.7;
+
+            // When Shisha charcoal (Index 0 - 3D Cube) is active, boost ember warmth
+            if (i === 0 && !entItem.photo) {
+              emberB.intensity = (1.5 + Math.sin(t * 3.5) * 0.4) * entItem.a;
+              emberB.position
+                .copy(entItem.obj.position)
+                .add(new THREE.Vector3(0.3, 0.2, 0.4));
+            }
+          }
+        });
+      }
+
+      // 4. Process Section (#slot-proc) - Drying Rack photo-plane
+      if (secs.proc && slots.proc && rackEnt) {
+        const rp = secs.proc.getBoundingClientRect();
+        const pv = secVis(rp);
+        const sp = slotInfo(slots.proc);
+        const stage = stateRef.current.stageIdx;
+        const pProgress = stateRef.current.procP;
+
+        rackEnt.obj.visible = pv > 0.001;
+        if (pv > 0.001) {
+          rackEnt.fade = 1;
+          place(rackEnt, sp, pv, t);
+
+          const targetExp = rackExp[stage] || 1.0;
+          rackExpNow += (targetExp - rackExpNow) * (1 - Math.exp(-dt * 4));
+          const u = rackEnt.obj.userData.mat.uniforms;
+          u.uExp.value = rackExpNow;
+          u.uZoom.value = 1.02 + pProgress * 0.26;
+          u.uPan.value.set((0.5 - pProgress) * 0.05, (pProgress - 0.5) * 0.03);
+        }
+      }
+
+      // 5. Closing Section (#slot-close) - 3D Shipping Container
+      if (secs.close && slots.close && closeCnt) {
+        const rcl = secs.close.getBoundingClientRect();
+        const cvis = secVis(rcl);
+        const scl = slotInfo(slots.close);
+
+        closeCnt.obj.visible = cvis > 0.001;
+        if (cvis > 0.001) {
+          closeCnt.fade = 1;
+          place(closeCnt, scl, cvis, t);
+          closeCnt.obj.rotation.y = -0.6 + Math.sin(t * 0.3) * 0.5 + ptr.x * 0.3;
+        }
       }
 
       renderer.render(scene, camera);
     };
 
-    animId = requestAnimationFrame(render);
+    animationId = requestAnimationFrame(renderLoop);
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
       renderer.dispose();
+      Object.keys(T).forEach((k) => T[k]?.dispose());
+      Object.keys(PHOTO).forEach((k) => PHOTO[k]?.tex.dispose());
+      GEO.cube.dispose();
     };
   }, []);
 
-  return <canvas ref={canvasRef} id="gl" aria-hidden="true" />;
+  return <canvas id="gl" ref={canvasRef} aria-hidden="true" />;
 }

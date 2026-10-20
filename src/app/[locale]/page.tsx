@@ -8,7 +8,6 @@ import { usePitch } from '@/context/PitchContext';
 import { WebGLScene } from '@/components/canvas/WebGLScene';
 import { ContainerPriceSimulator } from '@/components/calculator/ContainerPriceSimulator';
 import { TrustEvidenceSection } from '@/components/trust/TrustEvidenceSection';
-import { CommodityShowcase3D } from '@/components/product/CommodityShowcase3D';
 import { siteConfig } from '@/config/site-config';
 import { isRtl } from '@/lib/i18n';
 
@@ -313,23 +312,8 @@ export default function HomePage() {
                 <p className="note">{dict.commoditiesSection.indicativeNote}</p>
               </div>
 
-              {/* Sticky Real 3D Parallax Commodity Showcase */}
-              <div className="slot-sticky" id="slot-com">
-                <CommodityShowcase3D
-                  activeCommodityIndex={activeCom}
-                  locale={locale}
-                  onPlanClick={handlePlanClick}
-                  onRequestQuote={(idx) => {
-                    const slugs = [
-                      'premium-shisha-coconut-charcoal-briquettes',
-                      'bbq-hexagonal-hardwood-coconut-charcoal',
-                      'sumatra-mandheling-arabica-green-beans',
-                      'maluku-lalpari-cloves-handpicked',
-                    ];
-                    openRfq({ productSlug: slugs[idx] || slugs[0] });
-                  }}
-                />
-              </div>
+              {/* 3D / Photo-Plane Slot for Commodities Showcase */}
+              <div className="slot-sticky" id="slot-com" aria-hidden="true" />
             </div>
           </div>
         </section>
