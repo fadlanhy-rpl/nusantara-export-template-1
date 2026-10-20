@@ -40,6 +40,38 @@ export function MainNavbar({ locale, dict }: MainNavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Lock scroll when mobile menu is open, handle keyboard & resize
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        setLangOpen(false);
+      }
+    };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const getLocaleUrl = (newLocale: LocaleCode) => {
     if (!pathname) return `/${newLocale}`;
     const segments = pathname.split('/');
@@ -51,157 +83,165 @@ export function MainNavbar({ locale, dict }: MainNavbarProps) {
   };
 
   return (
-    <header className={`nav ${hideNav ? 'hide' : ''}`} id="nav">
-      {/* Brand with 45deg ember diamond mark */}
-      <Link href={`/${locale}`} className="brand shrink-0" aria-label={`${clientBrandName}, back to top`}>
-        <span className="mark shrink-0" aria-hidden="true" />
-        <span className="truncate max-w-[130px] sm:max-w-none">{clientBrandName}</span>
-      </Link>
+    <>
+      {/* Mobile Menu Fullscreen Backdrop with Blur */}
+      {mobileOpen && (
+        <div
+          className="nav-mobile-backdrop"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Center Nav Links */}
-      <nav className="nav-links" aria-label="Main">
-        <a href="#commodities" data-scroll>
-          {dict.nav.commodities}
-        </a>
-        <a href="#planner" data-scroll>
-          {dict.nav.calculator}
-        </a>
-        <a href="#process" data-scroll>
-          {dict.nav.qualityLegal}
-        </a>
-        <a href="#trust" data-scroll>
-          {dict.nav.auditProof}
-        </a>
-        <a href="#contact" data-scroll>
-          {dict.nav.contact}
-        </a>
-      </nav>
+      <header className={`nav ${hideNav ? 'hide' : ''}`} id="nav">
+        {/* Brand with 45deg ember diamond mark */}
+        <Link href={`/${locale}`} className="brand shrink-0" aria-label={`${clientBrandName}, back to top`}>
+          <span className="mark shrink-0" aria-hidden="true" />
+          <span className="truncate max-w-[115px] sm:max-w-none">{clientBrandName}</span>
+        </Link>
 
-      {/* Right Actions: Language Switcher & Request Quote */}
-      <div className="flex items-center gap-2">
-        {/* Language selector toggle */}
-        <div className="relative">
+        {/* Center Nav Links (Desktop >= 1024px) */}
+        <nav className="nav-links" aria-label="Main">
+          <a href="#commodities" data-scroll>
+            {dict.nav.commodities}
+          </a>
+          <a href="#planner" data-scroll>
+            {dict.nav.calculator}
+          </a>
+          <a href="#process" data-scroll>
+            {dict.nav.qualityLegal}
+          </a>
+          <a href="#trust" data-scroll>
+            {dict.nav.auditProof}
+          </a>
+          <a href="#contact" data-scroll>
+            {dict.nav.contact}
+          </a>
+        </nav>
+
+        {/* Right Actions: Language Switcher, Quote CTA, Mobile Toggle */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Language selector toggle */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setLangOpen(!langOpen)}
+              className="p-1.5 sm:p-2 text-[#8E8E93] hover:text-[#F5F5F4] transition-colors rounded-lg flex items-center gap-1 font-mono text-xs"
+              aria-label="Change language"
+            >
+              <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="uppercase text-[11px] sm:text-xs">{locale}</span>
+            </button>
+
+            {langOpen && (
+              <div className={`absolute top-full mt-2 ${rtl ? 'left-0' : 'right-0'} bg-[#141416] border border-[#2A2E39] rounded-xl shadow-2xl p-1.5 min-w-[130px] z-50 flex flex-col gap-1`}>
+                {LOCALES.map((l) => (
+                  <Link
+                    key={l}
+                    href={getLocaleUrl(l)}
+                    onClick={() => setLangOpen(false)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between transition-colors ${
+                      l === locale
+                        ? 'bg-[#E8742A] text-white font-bold'
+                        : 'text-[#8E8E93] hover:text-[#F5F5F4] hover:bg-[#1B1B1E]'
+                    }`}
+                  >
+                    <span>{LOCALE_LABELS[l].nativeName}</span>
+                    <span className="opacity-70">{LOCALE_LABELS[l].flag}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Primary CTA Button: Full on desktop (>= 1024px), compact RFQ badge on tablet/mobile (< 1024px) */}
           <button
+            className="nav-btn-desktop btn btn-light btn-sm font-semibold"
             type="button"
-            onClick={() => setLangOpen(!langOpen)}
-            className="p-2 text-[#8E8E93] hover:text-[#F5F5F4] transition-colors rounded-lg flex items-center gap-1 font-mono text-xs"
-            aria-label="Change language"
+            onClick={() => openRfq()}
           >
-            <Globe className="w-4 h-4" />
-            <span className="uppercase">{locale}</span>
+            {dict.nav.requestQuote}
           </button>
 
-          {langOpen && (
-            <div className={`absolute top-full mt-2 ${rtl ? 'left-0' : 'right-0'} bg-[#141416] border border-[#2A2E39] rounded-xl shadow-2xl p-1.5 min-w-[130px] z-50 flex flex-col gap-1`}>
-              {LOCALES.map((l) => (
-                <Link
-                  key={l}
-                  href={getLocaleUrl(l)}
-                  onClick={() => setLangOpen(false)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between transition-colors ${
-                    l === locale
-                      ? 'bg-[#E8742A] text-white font-bold'
-                      : 'text-[#8E8E93] hover:text-[#F5F5F4] hover:bg-[#1B1B1E]'
-                  }`}
-                >
-                  <span>{LOCALE_LABELS[l].nativeName}</span>
-                  <span className="opacity-70">{LOCALE_LABELS[l].flag}</span>
-                </Link>
-              ))}
-            </div>
-          )}
+          <button
+            className="nav-btn-mobile btn btn-light font-semibold"
+            type="button"
+            onClick={() => openRfq()}
+            aria-label={dict.nav.requestQuote}
+          >
+            <span>{locale === 'id' ? 'RFQ →' : locale === 'ar' ? 'تسعير ←' : locale === 'zh' ? '询价 →' : 'RFQ →'}</span>
+          </button>
+
+          {/* Mobile Menu Toggle (< 1024px) */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="nav-toggle-btn"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
 
-        {/* Primary CTA Button: Full on desktop (md+), compact RFQ badge on mobile */}
-        <button
-          className="hidden md:inline-flex btn btn-light btn-sm font-semibold"
-          type="button"
-          onClick={() => openRfq()}
-        >
-          {dict.nav.requestQuote}
-        </button>
+        {/* Mobile Navigation Dropdown Drawer with Rich Blur */}
+        {mobileOpen && (
+          <div className="nav-mobile-dropdown">
+            <a
+              href="#commodities"
+              data-scroll
+              onClick={() => setMobileOpen(false)}
+            >
+              <span>{dict.nav.commodities}</span>
+              <span className="num">01</span>
+            </a>
+            <a
+              href="#planner"
+              data-scroll
+              onClick={() => setMobileOpen(false)}
+            >
+              <span>{dict.nav.calculator}</span>
+              <span className="num">02</span>
+            </a>
+            <a
+              href="#process"
+              data-scroll
+              onClick={() => setMobileOpen(false)}
+            >
+              <span>{dict.nav.qualityLegal}</span>
+              <span className="num">03</span>
+            </a>
+            <a
+              href="#trust"
+              data-scroll
+              onClick={() => setMobileOpen(false)}
+            >
+              <span>{dict.nav.auditProof}</span>
+              <span className="num" style={{ color: 'var(--ember)' }}>04</span>
+            </a>
+            <a
+              href="#contact"
+              data-scroll
+              onClick={() => setMobileOpen(false)}
+            >
+              <span>{dict.nav.contact}</span>
+              <span className="num">05</span>
+            </a>
 
-        <button
-          className="md:hidden btn btn-light btn-sm !h-8 !px-2.5 text-xs font-semibold shrink-0"
-          type="button"
-          onClick={() => openRfq()}
-          aria-label={dict.nav.requestQuote}
-        >
-          <span>{locale === 'id' ? 'RFQ →' : locale === 'ar' ? 'تسعير ←' : locale === 'zh' ? '询价 →' : 'RFQ →'}</span>
-        </button>
+            <div className="divider" />
 
-        {/* Mobile Menu Toggle */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-[#8E8E93] hover:text-white hover:bg-white/5 transition-colors shrink-0"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileOpen && (
-        <div className="absolute top-[66px] inset-x-0 bg-[#141416]/98 backdrop-blur-xl border border-[rgba(245,245,244,0.15)] rounded-2xl p-4 flex flex-col gap-1.5 shadow-2xl md:hidden z-50">
-          <a
-            href="#commodities"
-            data-scroll
-            onClick={() => setMobileOpen(false)}
-            className="p-3 text-sm font-medium text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-xl flex items-center justify-between transition-colors"
-          >
-            <span>{dict.nav.commodities}</span>
-            <span className="font-mono text-xs text-[#8E8E93]">01</span>
-          </a>
-          <a
-            href="#planner"
-            data-scroll
-            onClick={() => setMobileOpen(false)}
-            className="p-3 text-sm font-medium text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-xl flex items-center justify-between transition-colors"
-          >
-            <span>{dict.nav.calculator}</span>
-            <span className="font-mono text-xs text-[#8E8E93]">02</span>
-          </a>
-          <a
-            href="#process"
-            data-scroll
-            onClick={() => setMobileOpen(false)}
-            className="p-3 text-sm font-medium text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-xl flex items-center justify-between transition-colors"
-          >
-            <span>{dict.nav.qualityLegal}</span>
-            <span className="font-mono text-xs text-[#8E8E93]">03</span>
-          </a>
-          <a
-            href="#trust"
-            data-scroll
-            onClick={() => setMobileOpen(false)}
-            className="p-3 text-sm font-medium text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-xl flex items-center justify-between transition-colors"
-          >
-            <span>{dict.nav.auditProof}</span>
-            <span className="font-mono text-xs text-[#E8742A]">04</span>
-          </a>
-          <a
-            href="#contact"
-            data-scroll
-            onClick={() => setMobileOpen(false)}
-            className="p-3 text-sm font-medium text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-xl flex items-center justify-between transition-colors"
-          >
-            <span>{dict.nav.contact}</span>
-            <span className="font-mono text-xs text-[#8E8E93]">05</span>
-          </a>
-          <div className="pt-3 mt-1 border-t border-[rgba(245,245,244,0.12)]">
             <button
               onClick={() => {
                 setMobileOpen(false);
                 openRfq();
               }}
-              className="w-full btn btn-light btn-sm justify-center font-semibold"
+              className="w-full btn btn-light btn-sm justify-center font-semibold mt-1"
             >
               {dict.nav.requestQuote}
             </button>
           </div>
-        </div>
-      )}
-    </header>
+        )}
+      </header>
+    </>
   );
 }

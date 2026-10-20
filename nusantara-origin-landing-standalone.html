@@ -111,12 +111,13 @@
       top: 42px;
       left: 50%;
       width: min(1240px, calc(100% - 32px));
+      max-width: calc(100% - 24px);
       height: 58px;
       transform: translate(-50%, 0);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       padding: 0 10px 0 20px;
       border-radius: 16px;
       border: 1px solid var(--line);
@@ -141,28 +142,42 @@
     .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
     .btn-desktop { display: inline-flex; }
-    .btn-mobile { display: none; }
-    .nav-toggle { display: none; }
+    .btn-mobile { display: none !important; }
+    .nav-toggle { display: none !important; }
+
+    .nav-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      z-index: 55;
+      display: none;
+    }
+    .nav-backdrop.open { display: block; }
 
     .nav-mobile-menu {
       position: absolute;
-      top: 66px;
-      inset-x: 0;
-      background: rgba(20, 20, 22, 0.98);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(245, 245, 244, 0.15);
-      border-radius: 16px;
-      padding: 16px;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(20, 20, 23, 0.97);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(245, 245, 244, 0.16);
+      border-radius: 18px;
+      padding: 14px;
       display: none;
       flex-direction: column;
-      gap: 6px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      gap: 4px;
+      box-shadow: 0 24px 48px -12px rgba(0,0,0,0.95);
       z-index: 65;
     }
     .nav-mobile-menu.open { display: flex; }
     .nav-mobile-menu a {
-      padding: 12px 14px;
-      border-radius: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
       font-size: 14.5px;
       font-weight: 500;
       color: var(--fg);
@@ -171,7 +186,7 @@
       align-items: center;
       transition: background 0.2s;
     }
-    .nav-mobile-menu a:hover { background: var(--surface-2); }
+    .nav-mobile-menu a:hover { background: rgba(245, 245, 244, 0.08); }
 
     /* Fixed WebGL Background */
     #gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
@@ -855,23 +870,35 @@
       .showcase-card { position: static; height: 380px; margin-top: 20px; }
       .hero-3d-box { height: 360px; }
     }
-    @media (max-width: 768px) {
-      .topbar { display: none; }
+    @media (max-width: 1024px) {
       .nav {
         top: 14px;
         height: 52px;
-        padding: 0 10px 0 16px;
-        border-radius: 14px;
+        padding: 0 8px 0 16px;
+        width: calc(100% - 24px);
+        max-width: calc(100% - 24px);
+        border-radius: 15px;
       }
-      .brand { font-size: 15px; }
-      .brand-mark { width: 10px; height: 10px; }
-      .nav-links { display: none; }
-      .btn-desktop { display: none; }
-      .btn-mobile { display: inline-flex; height: 34px !important; padding: 0 10px !important; font-size: 12px !important; font-weight: 600; }
+      .nav-links { display: none !important; }
+      .btn-desktop { display: none !important; }
+      .btn-mobile { display: inline-flex !important; height: 34px !important; padding: 0 11px !important; font-size: 12px !important; font-weight: 600; border-radius: 999px !important; }
       .nav-toggle {
-        display: inline-flex; width: 34px; height: 34px; border-radius: 8px; background: var(--surface-2);
+        display: inline-flex !important; width: 34px; height: 34px; border-radius: 8px; background: rgba(245, 245, 244, 0.08);
         border: 1px solid var(--line); color: var(--fg); font-size: 16px; align-items: center; justify-content: center; cursor: pointer;
       }
+    }
+    @media (max-width: 768px) {
+      .topbar { display: none; }
+      .nav {
+        top: 12px;
+        height: 50px;
+        padding: 0 8px 0 14px;
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+        border-radius: 14px;
+      }
+      .brand { font-size: 14.5px; }
+      .brand-mark { width: 10px; height: 10px; }
       .hero { padding-top: 86px; padding-bottom: 40px; }
       .hero h1 { font-size: clamp(28px, 7.5vw, 42px); }
       .hero-lead { font-size: 15.5px; margin-bottom: 24px; }
@@ -879,7 +906,7 @@
       .stmt-sec { padding: 60px 0; }
       .stmt-text { font-size: clamp(20px, 5.5vw, 30px); }
       .commodities { padding: 60px 0 80px; }
-      .planner { padding: 60px 0; border-radius: 20px; }
+      .planner { padding: 60px 0; }
       .plan-box { padding: 20px; }
       .stage-card { grid-template-columns: 50px 1fr; }
       .stage-metric { grid-column: 1 / -1; text-align: left; }
@@ -893,6 +920,19 @@
       .drawer { border-radius: 18px 18px 0 0; }
     }
     @media (max-width: 520px) {
+      .nav {
+        top: 10px;
+        height: 46px;
+        padding: 0 6px 0 12px;
+        width: calc(100% - 14px);
+        max-width: calc(100% - 14px);
+        border-radius: 12px;
+        gap: 6px;
+      }
+      .brand { font-size: 13.5px; gap: 7px; max-width: 125px; }
+      .brand-mark { width: 9px; height: 9px; }
+      .btn-mobile { height: 32px !important; padding: 0 9px !important; font-size: 11.5px !important; }
+      .nav-toggle { width: 32px; height: 32px; font-size: 15px; }
       .certs-grid { grid-template-columns: 1fr; }
       .hero-actions .btn { width: 100%; }
       .hero-3d-box { height: 300px; padding: 16px; }
@@ -921,6 +961,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Mobile Navigation Backdrop Overlay -->
+  <div class="nav-backdrop" id="nav-backdrop" onclick="toggleNavMenu()"></div>
 
   <!-- Floating Navigation Bar (Aligned 1240px to .wrap) -->
   <header class="nav" id="nav">
@@ -1652,7 +1695,9 @@
 
     function toggleNavMenu() {
       var m = document.getElementById('nav-mobile-menu');
+      var b = document.getElementById('nav-backdrop');
       if (m) m.classList.toggle('open');
+      if (b) b.classList.toggle('open');
     }
 
     /* ---------- Commodity Accordion & Tilt ---------- */
