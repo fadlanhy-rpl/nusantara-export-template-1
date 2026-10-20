@@ -180,11 +180,12 @@ main > section { position: relative; z-index: 2; }
   transform: rotate(45deg);
 }
 
-.nav-links { display: flex; gap: 6px; }
+.nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-links a {
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-size: 15px;
+  padding: 6px 11px;
+  border-radius: 9px;
+  font-size: 14px;
+  white-space: nowrap;
   color: var(--muted);
   text-decoration: none;
   transition: color 0.2s, background 0.2s;

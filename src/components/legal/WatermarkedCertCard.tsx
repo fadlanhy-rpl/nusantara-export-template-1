@@ -158,14 +158,14 @@ export function WatermarkedCertCard({
         </div>
       </div>
 
-      {/* Large Inspect Modal - Elevated to z-[100] above floating nav (z-60) and drawers */}
+      {/* Large Inspect Modal - Elevated to z-[100] with generous top clearance (pt-28) from navbar */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md p-4 sm:p-6 md:p-8 flex items-center justify-center overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md pt-24 sm:pt-28 pb-8 px-4 sm:px-6 flex items-center justify-center overflow-y-auto"
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-[#141416] border border-[rgba(245,245,244,0.15)] rounded-2xl max-w-3xl w-full max-h-[85vh] my-auto overflow-hidden flex flex-col text-white shadow-2xl relative"
+            className="bg-[#141416] border border-[rgba(245,245,244,0.18)] ring-1 ring-white/10 rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[calc(100vh-140px)] my-auto overflow-hidden flex flex-col text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] relative"
             onClick={(e) => e.stopPropagation()}
             onContextMenu={(e) => e.preventDefault()}
           >
@@ -196,12 +196,12 @@ export function WatermarkedCertCard({
             </div>
 
             {/* Document Body with Anti-Theft Protection */}
-            <div className="relative flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0B0B0C] flex items-center justify-center select-none min-h-[220px]">
+            <div className="relative flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0B0B0C] flex items-center justify-center select-none min-h-[180px]">
               <img
                 src={cert.previewUrl}
                 alt={cert.title}
                 draggable={false}
-                className="max-h-[48vh] sm:max-h-[52vh] w-auto object-contain rounded-lg border border-white/10 filter contrast-110 shadow-2xl"
+                className="max-h-[38vh] sm:max-h-[44vh] w-auto object-contain rounded-lg border border-white/10 filter contrast-110 shadow-2xl"
               />
 
               {/* Watermark Diagonal Overlay */}

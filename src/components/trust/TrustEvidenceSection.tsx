@@ -92,7 +92,7 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
 
   return (
     <section
-      className="relative z-10 border-t border-b border-[rgba(245,245,244,0.12)] bg-[#0B0B0C] py-24 sm:py-32"
+      className="relative z-10 border-t border-b border-[rgba(245,245,244,0.12)] bg-[#0B0B0C] py-24 sm:py-32 scroll-mt-24 sm:scroll-mt-28"
       id="trust"
     >
       <div className="wrap">

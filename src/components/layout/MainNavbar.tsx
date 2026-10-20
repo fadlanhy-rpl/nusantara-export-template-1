@@ -69,6 +69,9 @@ export function MainNavbar({ locale, dict }: MainNavbarProps) {
         <a href="#process" data-scroll>
           {dict.nav.qualityLegal}
         </a>
+        <a href="#trust" data-scroll>
+          {dict.nav.auditProof}
+        </a>
         <a href="#contact" data-scroll>
           {dict.nav.contact}
         </a>
@@ -155,6 +158,14 @@ export function MainNavbar({ locale, dict }: MainNavbarProps) {
             className="p-2.5 text-sm text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-lg"
           >
             {dict.nav.qualityLegal}
+          </a>
+          <a
+            href="#trust"
+            data-scroll
+            onClick={() => setMobileOpen(false)}
+            className="p-2.5 text-sm text-[#F5F5F4] hover:bg-[#1B1B1E] rounded-lg"
+          >
+            {dict.nav.auditProof}
           </a>
           <a
             href="#contact"
