@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CertificateDoc } from '@/types/product';
 import { LocaleCode } from '@/types/export-config';
 import { Messages } from '@/lib/dictionary';
@@ -20,6 +20,25 @@ export function WatermarkedCertCard({
 }: WatermarkedCertCardProps) {
   const { clientCompanyName, openRfq } = usePitch();
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Prevent background scroll and support Escape key when modal is open
+  useEffect(() => {
+    if (modalOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setModalOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [modalOpen]);
 
   const watermarkString = `ISSUED TO ${clientCompanyName.toUpperCase()} • OFFICIAL COMPLIANCE • ANTI-FRAUD VERIFIED • `;
 
@@ -139,48 +158,55 @@ export function WatermarkedCertCard({
         </div>
       </div>
 
-      {/* Large Inspect Modal */}
+      {/* Large Inspect Modal - Elevated to z-[100] above floating nav (z-60) and drawers */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center"
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md p-4 sm:p-6 md:p-8 flex items-center justify-center overflow-y-auto"
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-[#141416] border border-[rgba(245,245,244,0.15)] rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col text-white shadow-2xl"
+            className="bg-[#141416] border border-[rgba(245,245,244,0.15)] rounded-2xl max-w-3xl w-full max-h-[85vh] my-auto overflow-hidden flex flex-col text-white shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
             onContextMenu={(e) => e.preventDefault()}
           >
             {/* Modal Header */}
-            <div className="p-4 border-b border-[rgba(245,245,244,0.12)] flex items-center justify-between">
-              <div>
-                <h4 className="font-sans font-medium text-base text-white">
+            <div className="p-4 sm:p-5 border-b border-[rgba(245,245,244,0.12)] flex items-center justify-between gap-4 bg-[#141416] shrink-0">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-mono text-[11px] text-[#E8742A] font-medium tracking-wide">
+                    {cert.refNumber}
+                  </span>
+                  <span className="text-white/30">•</span>
+                  <span className="font-mono text-[11px] text-[#8E8E93] truncate">
+                    {cert.issuer}
+                  </span>
+                </div>
+                <h4 className="font-sans font-medium text-base sm:text-lg text-[#F5F5F4] truncate">
                   {cert.title}
                 </h4>
-                <span className="font-mono text-xs text-[#8E8E93]">
-                  {cert.refNumber} • Issuer: {cert.issuer}
-                </span>
               </div>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="w-8 h-8 rounded-lg bg-[#1B1B1E] hover:bg-[#26262B] border border-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-9 h-9 rounded-xl bg-[#1B1B1E] hover:bg-[#26262B] border border-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                aria-label="Close modal"
               >
                 ✕
               </button>
             </div>
 
             {/* Document Body with Anti-Theft Protection */}
-            <div className="relative flex-1 overflow-y-auto p-4 bg-[#0B0B0C] flex items-center justify-center select-none">
+            <div className="relative flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0B0B0C] flex items-center justify-center select-none min-h-[220px]">
               <img
                 src={cert.previewUrl}
                 alt={cert.title}
                 draggable={false}
-                className="max-h-[60vh] object-contain rounded border border-white/10 filter contrast-125"
+                className="max-h-[48vh] sm:max-h-[52vh] w-auto object-contain rounded-lg border border-white/10 filter contrast-110 shadow-2xl"
               />
 
               {/* Watermark Diagonal Overlay */}
-              <div className="absolute inset-0 cert-watermark-overlay flex items-center justify-center p-8 pointer-events-none select-none">
-                <div className="cert-watermark-text text-white/30 text-center font-mono text-sm sm:text-base uppercase leading-loose">
+              <div className="absolute inset-0 cert-watermark-overlay flex items-center justify-center p-6 sm:p-8 pointer-events-none select-none">
+                <div className="cert-watermark-text text-white/30 text-center font-mono text-xs sm:text-sm uppercase leading-loose tracking-wider">
                   {watermarkString}
                   <br />
                   {watermarkString}
@@ -191,9 +217,15 @@ export function WatermarkedCertCard({
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-[#141416] border-t border-[rgba(245,245,244,0.12)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
-              <span className="text-[#8E8E93]">
-                Original unredacted PDF is provided after buyer LOI verification.
+            <div className="p-4 sm:p-5 bg-[#141416] border-t border-[rgba(245,245,244,0.12)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono shrink-0">
+              <span className="text-[#8E8E93] text-center sm:text-left">
+                {locale === 'id'
+                  ? 'Dokumen resmi tanpa redaksi diberikan setelah verifikasi LOI buyer.'
+                  : locale === 'ar'
+                  ? 'يتم توفير النسخة الرسمية بعد التحقق من خطاب النوايا.'
+                  : locale === 'zh'
+                  ? '官方未脱敏PDF将在买方意向书（LOI）验证后提供。'
+                  : 'Original unredacted PDF is provided after buyer LOI verification.'}
               </span>
               <button
                 type="button"
@@ -204,9 +236,11 @@ export function WatermarkedCertCard({
                     variantId: `Unredacted COA Request: ${cert.refNumber}`,
                   });
                 }}
-                className="px-5 py-2.5 bg-[#E8742A] hover:bg-[#C95E1B] text-white font-medium rounded-lg transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 bg-[#E8742A] hover:bg-[#C95E1B] text-white font-medium rounded-lg transition-colors cursor-pointer text-center whitespace-nowrap shadow-md shadow-[#E8742A]/20 flex items-center justify-center gap-2 shrink-0"
               >
-                Request Official Spec Copy →
+                <Lock className="w-3.5 h-3.5 text-white/90" />
+                <span>{dict.quality.requestUnredacted}</span>
+                <span className="font-mono text-xs">→</span>
               </button>
             </div>
           </div>
