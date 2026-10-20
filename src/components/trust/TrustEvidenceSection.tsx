@@ -13,7 +13,6 @@ import {
   Lock,
   FileCheck2,
   CheckCircle2,
-  ExternalLink,
   ChevronRight,
 } from 'lucide-react';
 
@@ -90,15 +89,14 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
   ];
 
   const currentGallery = galleryItems[selectedIdx];
-  const CurrentIcon = currentGallery.icon;
 
   return (
     <section
-      className="relative z-10 border-t border-b border-white/10 bg-[#0B0B0C] py-24 sm:py-32"
+      className="relative z-10 border-t border-b border-[rgba(245,245,244,0.12)] bg-[#0B0B0C] py-24 sm:py-32"
       id="trust"
     >
       <div className="wrap">
-        {/* Section Editorial Header */}
+        {/* Section Editorial Header - matching exactly with other sections */}
         <div className="sec-head rv mb-12 sm:mb-16">
           <p className="label">{dict.trustEvidence.label}</p>
           <h2>
@@ -120,27 +118,20 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
               </>
             )}
           </h2>
-          <p className="lead text-[#8E8E93] text-base sm:text-lg max-w-2xl mt-3">
+          <p className="lead max-w-2xl mt-4">
             {dict.trustEvidence.subtitle}
           </p>
         </div>
 
-        {/* Minimalist Dark Segmented Controller */}
-        <div className="inline-flex p-1.5 rounded-xl bg-[#141416] border border-white/10 gap-1.5 mb-10 select-none">
+        {/* Global Standard Buttons for Tab Switching */}
+        <div className="flex items-center gap-3 mb-10 select-none">
           <button
             type="button"
             onClick={() => setActiveTab('gallery')}
-            className={`px-5 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
-              activeTab === 'gallery'
-                ? 'bg-[#1B1B1E] text-white border border-white/15 shadow-sm'
-                : 'text-[#8E8E93] hover:text-white border border-transparent'
-            }`}
+            className={`btn btn-sm ${
+              activeTab === 'gallery' ? 'btn-light' : 'btn-line'
+            } cursor-pointer`}
           >
-            <span
-              className={`w-2 h-2 rounded-full transition-colors ${
-                activeTab === 'gallery' ? 'bg-[#E8742A]' : 'bg-transparent'
-              }`}
-            />
             <Truck className="w-4 h-4 text-[#E8742A]" />
             <span>{dict.trustEvidence.galleryTab}</span>
           </button>
@@ -148,17 +139,10 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
           <button
             type="button"
             onClick={() => setActiveTab('certs')}
-            className={`px-5 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
-              activeTab === 'certs'
-                ? 'bg-[#1B1B1E] text-white border border-white/15 shadow-sm'
-                : 'text-[#8E8E93] hover:text-white border border-transparent'
-            }`}
+            className={`btn btn-sm ${
+              activeTab === 'certs' ? 'btn-light' : 'btn-line'
+            } cursor-pointer`}
           >
-            <span
-              className={`w-2 h-2 rounded-full transition-colors ${
-                activeTab === 'certs' ? 'bg-[#E8742A]' : 'bg-transparent'
-              }`}
-            />
             <FileCheck2 className="w-4 h-4 text-[#E8742A]" />
             <span>{dict.trustEvidence.certsTab}</span>
           </button>
@@ -168,7 +152,7 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
         {activeTab === 'gallery' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Main Interactive Inspection Viewfinder (7 cols) */}
-            <div className="lg:col-span-7 bg-[#141416] border border-white/10 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col group">
+            <div className="lg:col-span-7 bg-[#141416] border border-[rgba(245,245,244,0.12)] rounded-2xl overflow-hidden relative shadow-2xl flex flex-col group">
               {/* Image Frame with HUD Overlays */}
               <div className="relative aspect-16/10 sm:aspect-16/9 w-full bg-[#0B0B0C] overflow-hidden select-none">
                 <img
@@ -213,17 +197,17 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
               </div>
 
               {/* Bottom Information & Checklist Panel */}
-              <div className="p-6 sm:p-8 bg-[#141416] border-t border-white/10 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4">
+              <div className="p-6 sm:p-8 bg-[#141416] border-t border-[rgba(245,245,244,0.12)] space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[rgba(245,245,244,0.12)] pb-4">
                   <div>
-                    <span className="font-mono text-xs text-[#E8742A] font-medium">
+                    <span className="font-mono text-xs text-[#E8742A] font-medium tracking-wide">
                       STAGE {currentGallery.num} OF 04
                     </span>
-                    <h3 className="font-sans text-xl sm:text-2xl font-medium text-white mt-0.5">
+                    <h3 className="font-sans text-xl sm:text-2xl font-medium text-[#F5F5F4] tracking-tight mt-0.5">
                       {currentGallery.title}
                     </h3>
                   </div>
-                  <span className="font-mono text-xs text-[#8E8E93] bg-[#1B1B1E] px-3 py-1.5 rounded-md border border-white/10 self-start sm:self-auto">
+                  <span className="font-mono text-xs text-[#8E8E93] bg-[#1B1B1E] px-3 py-1.5 rounded-md border border-[rgba(245,245,244,0.12)] self-start sm:self-auto">
                     {currentGallery.metrics}
                   </span>
                 </div>
@@ -253,7 +237,6 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
 
               {galleryItems.map((item, idx) => {
                 const isSelected = selectedIdx === idx;
-                const Icon = item.icon;
                 return (
                   <button
                     key={idx}
@@ -262,7 +245,7 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
                     className={`w-full text-left p-3.5 sm:p-4 rounded-xl border transition-all duration-300 flex items-center gap-4 cursor-pointer relative overflow-hidden ${
                       isSelected
                         ? 'bg-[#1B1B1E] border-[#E8742A] shadow-lg shadow-[#E8742A]/5'
-                        : 'bg-[#141416] border-white/10 hover:border-white/20 hover:bg-[#18181B]'
+                        : 'bg-[#141416] border-[rgba(245,245,244,0.12)] hover:border-white/25 hover:bg-[#18181B]'
                     }`}
                   >
                     {/* Active Accent Bar */}
@@ -320,7 +303,7 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
         {/* Tab 2: Verified Laboratory & Legal Credentials Vault */}
         {activeTab === 'certs' && (
           <div className="space-y-6">
-            <div className="p-4 bg-[#141416] rounded-xl border border-white/10 text-xs text-[#8E8E93] font-mono flex items-center justify-between gap-4">
+            <div className="p-4 bg-[#141416] rounded-xl border border-[rgba(245,245,244,0.12)] text-xs text-[#8E8E93] font-mono flex items-center justify-between gap-4">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-[#E8742A] shrink-0" />
                 <span>{dict.trustEvidence.verifyNotice}</span>

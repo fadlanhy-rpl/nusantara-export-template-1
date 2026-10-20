@@ -1,3 +1,4 @@
-arXiv API Terms of Use Notification
-Timestamp: 2026-10-20T14:37:10+07:00
-Notice: Users are advised to review the terms of use at https://info.arxiv.org/help/api/index.html and ensure compliance with arXiv rate limits (max 1 request every 3 seconds) and respect all specific paper licenses and distribution restrictions.
+ArXiv Terms of Use Notification:
+Accessed at: 2026-10-20T19:57:45+07:00
+Terms available at: https://info.arxiv.org/help/api/index.html
+Always check the license of papers retrieved for any restrictions.
