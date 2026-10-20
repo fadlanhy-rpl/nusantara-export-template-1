@@ -621,43 +621,75 @@ footer { position: relative; z-index: 2; background: var(--bg); border-top: 1px 
 
 /* Responsive reflows */
 @media (max-width: 960px) {
-  .hero { padding-top: 120px; }
+  .hero { padding-top: 110px; }
   .hero .wrap, .closing .wrap, .statement .wrap, .com-grid, .pl-grid, .pr-grid { grid-template-columns: 1fr; }
-  .slot-hero { min-height: 380px; order: 2; }
-  .statement .wrap { gap: 40px; }
-  .statement { padding-block: 100px; }
-  .commodities { padding-block: 80px 100px; }
-  .slot-sticky { position: relative; top: 0; height: 300px; min-height: 0; order: -1; }
-  .planner { padding-block: 90px; }
-  .pl-grid { gap: 40px; }
-  .process { height: 480vh; }
-  .process-in { align-items: flex-start; padding-top: 88px; }
+  .slot-hero { min-height: 320px; order: 2; }
+  .statement .wrap { gap: 32px; }
+  .statement { padding-block: 80px; }
+  .commodities { padding-block: 70px 90px; }
+  .slot-sticky { position: relative; top: 0; height: 260px; min-height: 0; order: -1; margin-bottom: 20px; }
+  .planner { padding-block: 80px; }
+  .pl-grid { gap: 36px; }
+  .process { height: 420vh; }
+  .process-in { align-items: flex-start; padding-top: 80px; }
   .pr-grid { gap: 8px; }
-  .slot-proc { height: 28vh; min-height: 180px; order: -1; }
+  .slot-proc { height: 26vh; min-height: 160px; order: -1; }
   .process h2 { margin-bottom: 18px; }
-  .closing { padding-block: 100px 80px; }
-  .slot-close { min-height: 260px; }
+  .closing { padding-block: 90px 70px; }
+  .slot-close { min-height: 240px; }
   .f-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 760px) {
+  .nav {
+    height: 54px;
+    padding: 0 10px 0 14px;
+    border-radius: 14px;
+  }
+  .brand {
+    font-size: 15px;
+    gap: 8px;
+  }
+  .brand .mark {
+    width: 10px;
+    height: 10px;
+  }
   .nav-links { display: none; }
-  .row-head { grid-template-columns: 32px 1fr 40px; }
+  .row-head { grid-template-columns: 28px 1fr 36px; padding: 16px 12px; }
   .row-hs { display: none; }
-  .row-body > div { padding-left: 48px; }
-  [dir="rtl"] .row-body > div { padding-right: 48px; padding-left: 0; }
-  .specs { grid-template-columns: repeat(2, auto); }
+  .row-name { font-size: 16px; }
+  .row-body > div { padding-left: 24px; padding-right: 8px; }
+  [dir="rtl"] .row-body > div { padding-right: 24px; padding-left: 8px; }
+  .specs { grid-template-columns: repeat(2, 1fr); gap: 10px 16px; }
+  .planner { border-radius: 20px; }
+  .slot-sticky { height: 220px; margin-bottom: 16px; }
 }
 
 @media (max-width: 560px) {
-  body { font-size: 16px; }
-  .big3 { grid-template-columns: 1fr 1fr; }
-  .big3 div:last-child { grid-column: 1 / -1; }
-  .row2 { grid-template-columns: 1fr; }
+  body { font-size: 15.5px; }
+  .hero { padding-top: 96px; padding-bottom: 40px; }
+  .hero h1 { font-size: clamp(2.2rem, 7.8vw, 3.2rem); }
+  .hero p.sub { font-size: 16px; margin-top: 18px; }
+  .hero .cta { gap: 10px; }
+  .hero .cta .btn { flex: 1 1 100%; width: 100%; height: 46px; }
+  .hero-stats { grid-template-columns: 1fr; gap: 12px; }
+  .slot-hero { min-height: 280px; }
+  .statement { padding-block: 60px; }
+  .commodities { padding-block: 60px 70px; }
+  .row-foot { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .row-foot .linkbtn { width: 100%; justify-content: flex-start; }
+  .big3 { grid-template-columns: 1fr; gap: 14px; }
+  .row2 { grid-template-columns: 1fr; gap: 16px; }
   .g2 { grid-template-columns: 1fr; }
   .f-grid { grid-template-columns: 1fr; }
-  .bar { grid-template-columns: 78px 1fr 44px; }
-  .hero .cta .btn { flex: 1 1 100%; }
+  .bar { grid-template-columns: 74px 1fr 40px; font-size: 12px; }
+  .res-foot { flex-direction: column; align-items: stretch; gap: 12px; }
+  .res-foot .btn { width: 100%; }
+  .pills { gap: 6px; }
+  .pill { min-height: 40px; padding: 6px 12px; font-size: 13.5px; }
+  .closing h2 { font-size: clamp(1.9rem, 6vw, 2.8rem); }
+  .closing .cta { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 10px; }
+  .closing .cta .btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

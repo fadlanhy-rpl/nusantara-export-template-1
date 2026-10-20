@@ -1011,6 +1011,12 @@ export function WebGLScene({
       return ease((vh - r.top) / (vh * 0.6)) * ease(r.bottom / (vh * 0.6));
     }
 
+    function slotVis(s: ReturnType<typeof slotInfo>, fadeDistance: number = 110) {
+      const exitTop = Math.min(1, Math.max(0, s.bottom / fadeDistance));
+      const exitBottom = Math.min(1, Math.max(0, (vh - s.top) / fadeDistance));
+      return ease(exitTop) * ease(exitBottom);
+    }
+
     let dt = 0.016;
     let lastT = 0;
     const rackExp = [0.9, 1.0, 1.3, 1.2, 1.0];
@@ -1095,7 +1101,8 @@ export function WebGLScene({
 
       // 2. Hero Cluster (3D Container + 3D Glowing Coal Cube + Floating Photo Planes)
       const sh = slotInfo(slots.hero);
-      const heroOn = sh.bottom > -vh * 0.5 && sh.top < vh * 1.2;
+      const heroVis = slotVis(sh, 140);
+      const heroOn = heroVis > 0.005;
       if (heroCnt) heroCnt.obj.visible = heroOn && built;
       if (heroCube) heroCube.obj.visible = heroOn && built;
       hero.forEach((entItem) => {
@@ -1103,33 +1110,34 @@ export function WebGLScene({
       });
 
       if (heroOn && built) {
-        if (heroCnt) place(heroCnt, sh, 1, t);
+        if (heroCnt) place(heroCnt, sh, heroVis, t);
         if (heroCube) {
-          place(heroCube, sh, 1, t);
+          place(heroCube, sh, heroVis, t);
           // Modulate emissive heat breathing
-          MAT.hero.emissiveIntensity = 0.85 * thermalBreath;
-          emberA.intensity = (1.35 + Math.sin(t * 2.8) * 0.3) * thermalBreath;
+          MAT.hero.emissiveIntensity = 0.85 * thermalBreath * heroVis;
+          emberA.intensity = (1.35 + Math.sin(t * 2.8) * 0.3) * thermalBreath * heroVis;
           emberA.position
             .copy(heroCube.obj.position)
             .add(new THREE.Vector3(0.18, 0.15, 0.3));
         }
         hero.forEach((entItem) => {
-          place(entItem, sh, 1, t);
+          place(entItem, sh, heroVis, t);
         });
       }
 
       // 3. Commodities Showcase (#slot-com)
       if (secs.com && slots.com) {
         const rc = secs.com.getBoundingClientRect();
-        const cv_ = secVis(rc);
         const sc = slotInfo(slots.com);
+        // Multiplies section visibility with slot's own viewport visibility to prevent floating on mobile
+        const cv_ = secVis(rc) * slotVis(sc, 120);
         const currentActive = stateRef.current.activeCom;
 
         com.forEach((entItem, i) => {
           if (!entItem) return;
           const target = i === currentActive ? 1 : 0;
           entItem.a += (target - entItem.a) * (1 - Math.exp(-dt * 8));
-          const show = cv_ > 0.001 && entItem.a > 0.005;
+          const show = cv_ > 0.005 && entItem.a > 0.005;
           entItem.obj.visible = show;
 
           if (show) {
@@ -1139,9 +1147,9 @@ export function WebGLScene({
 
             // When Shisha charcoal (Index 0 - 3D Cube) is active, boost ember warmth & thermal breathing
             if (i === 0 && !entItem.photo) {
-              MAT.cube.emissiveIntensity = 0.78 * thermalBreath;
+              MAT.cube.emissiveIntensity = 0.78 * thermalBreath * ease(cv_);
               emberB.intensity =
-                (1.45 + Math.sin(t * 3.2) * 0.35) * entItem.a * thermalBreath;
+                (1.45 + Math.sin(t * 3.2) * 0.35) * entItem.a * thermalBreath * ease(cv_);
               emberB.position
                 .copy(entItem.obj.position)
                 .add(new THREE.Vector3(0.2, 0.16, 0.3));
@@ -1153,13 +1161,13 @@ export function WebGLScene({
       // 4. Process Section (#slot-proc) - Drying Rack photo-plane
       if (secs.proc && slots.proc && rackEnt) {
         const rp = secs.proc.getBoundingClientRect();
-        const pv = secVis(rp);
         const sp = slotInfo(slots.proc);
+        const pv = secVis(rp) * slotVis(sp, 100);
         const stage = stateRef.current.stageIdx;
         const pProgress = stateRef.current.procP;
 
-        rackEnt.obj.visible = pv > 0.001;
-        if (pv > 0.001) {
+        rackEnt.obj.visible = pv > 0.005;
+        if (pv > 0.005) {
           rackEnt.fade = 1;
           place(rackEnt, sp, pv, t);
 
@@ -1175,11 +1183,11 @@ export function WebGLScene({
       // 5. Closing Section (#slot-close) - 3D Shipping Container
       if (secs.close && slots.close && closeCnt) {
         const rcl = secs.close.getBoundingClientRect();
-        const cvis = secVis(rcl);
         const scl = slotInfo(slots.close);
+        const cvis = secVis(rcl) * slotVis(scl, 100);
 
-        closeCnt.obj.visible = cvis > 0.001;
-        if (cvis > 0.001) {
+        closeCnt.obj.visible = cvis > 0.005;
+        if (cvis > 0.005) {
           closeCnt.fade = 1;
           place(closeCnt, scl, cvis, t);
           closeCnt.obj.rotation.y = -0.6 + Math.sin(t * 0.3) * 0.5 + ptr.x * 0.3;

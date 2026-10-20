@@ -158,14 +158,14 @@ export function WatermarkedCertCard({
         </div>
       </div>
 
-      {/* Large Inspect Modal - Elevated to z-[100] with generous top clearance (pt-28) from navbar */}
+      {/* Large Inspect Modal - Elevated to z-[100] with generous top clearance (pt-20 mobile / pt-28 desktop) from navbar */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md pt-24 sm:pt-28 pb-8 px-4 sm:px-6 flex items-center justify-center overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md pt-20 sm:pt-28 pb-6 sm:pb-8 px-3 sm:px-6 flex items-center justify-center overflow-y-auto"
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-[#141416] border border-[rgba(245,245,244,0.18)] ring-1 ring-white/10 rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[calc(100vh-140px)] my-auto overflow-hidden flex flex-col text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] relative"
+            className="bg-[#141416] border border-[rgba(245,245,244,0.18)] ring-1 ring-white/10 rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-140px)] my-auto overflow-hidden flex flex-col text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] relative"
             onClick={(e) => e.stopPropagation()}
             onContextMenu={(e) => e.preventDefault()}
           >

@@ -3,6 +3,8 @@
 Generator for nusantara-origin-landing-standalone.html
 Creates a single self-contained HTML file for external AI review and browser testing.
 All assets point to public high-reliability hosted CDN URLs (Vercel & raw GitHub & Unsplash).
+Fully responsive across mobile (320px-480px), tablet (600px-960px), and desktop.
+Includes slot visibility clamping to prevent 3D objects from overlapping accordion on mobile.
 """
 
 import os
@@ -129,14 +131,14 @@ HTML_CONTENT = r'''<!doctype html>
       padding: 0 10px 0 20px;
       border-radius: 16px;
       border: 1px solid var(--line);
-      background: rgba(20, 20, 22, 0.85);
+      background: rgba(20, 20, 22, 0.88);
       -webkit-backdrop-filter: blur(16px);
       backdrop-filter: blur(16px);
       transition: transform 0.4s var(--ease), top 0.3s;
     }
     .nav.hide { transform: translate(-50%, -150%); }
-    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
-    .brand-mark { width: 12px; height: 12px; border-radius: 3px; background: var(--ember); transform: rotate(45deg); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; flex-shrink: 0; }
+    .brand-mark { width: 12px; height: 12px; border-radius: 3px; background: var(--ember); transform: rotate(45deg); flex-shrink: 0; }
     .nav-links { display: flex; gap: 4px; align-items: center; }
     .nav-links a {
       padding: 6px 12px;
@@ -147,7 +149,40 @@ HTML_CONTENT = r'''<!doctype html>
       transition: all 0.2s;
     }
     .nav-links a:hover { color: var(--fg); background: rgba(245, 245, 244, 0.08); }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .btn-desktop { display: inline-flex; }
+    .btn-mobile { display: none; }
+    .nav-toggle { display: none; }
+
+    .nav-mobile-menu {
+      position: absolute;
+      top: 66px;
+      inset-x: 0;
+      background: rgba(20, 20, 22, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(245, 245, 244, 0.15);
+      border-radius: 16px;
+      padding: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      z-index: 65;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-menu a {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--fg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .nav-mobile-menu a:hover { background: var(--surface-2); }
 
     /* Fixed WebGL Background */
     #gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
@@ -178,7 +213,7 @@ HTML_CONTENT = r'''<!doctype html>
       color: var(--ember);
       margin-bottom: 24px;
     }
-    .hero h1 { font-size: clamp(34px, 4.2vw, 54px); margin-bottom: 20px; line-height: 1.08; }
+    .hero h1 { font-size: clamp(32px, 4.2vw, 54px); margin-bottom: 20px; line-height: 1.08; }
     .hero-lead { font-size: 17px; color: var(--muted); max-width: 540px; margin-bottom: 32px; line-height: 1.6; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 36px; }
     .hero-stats {
@@ -236,7 +271,7 @@ HTML_CONTENT = r'''<!doctype html>
       background: #09090A;
     }
     .stmt-text {
-      font-size: clamp(26px, 3.2vw, 42px);
+      font-size: clamp(24px, 3.2vw, 42px);
       max-width: 960px;
       line-height: 1.25;
       color: var(--fg);
@@ -338,7 +373,7 @@ HTML_CONTENT = r'''<!doctype html>
       margin: 40px 0;
       box-shadow: 0 40px 100px rgba(0,0,0,0.6);
     }
-    .planner h2 { color: var(--ink); font-size: clamp(30px, 3.8vw, 48px); margin-bottom: 12px; }
+    .planner h2 { color: var(--ink); font-size: clamp(28px, 3.8vw, 48px); margin-bottom: 12px; }
     .planner .lead { color: var(--ink-muted); max-width: 620px; margin-bottom: 40px; font-size: 17px; }
     .plan-grid {
       display: grid;
@@ -434,7 +469,7 @@ HTML_CONTENT = r'''<!doctype html>
       padding: 100px 0;
       scroll-margin-top: 100px;
     }
-    .tabs-wrap { display: flex; gap: 12px; margin-bottom: 40px; }
+    .tabs-wrap { display: flex; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
     .tab-btn {
       padding: 10px 20px;
       border-radius: 10px;
@@ -684,14 +719,14 @@ HTML_CONTENT = r'''<!doctype html>
     }
     .btn-cert-secondary:hover { background: #26262B; border-color: rgba(255,255,255,0.2); }
 
-    /* Inspect Modal Dialog with pt-28 navbar spacing */
+    /* Inspect Modal Dialog with pt-20 mobile / pt-28 desktop navbar clearance */
     .modal-overlay {
       position: fixed;
       inset: 0;
       z-index: 100;
       background: rgba(0,0,0,0.92);
       backdrop-filter: blur(14px);
-      padding: 110px 16px 32px;
+      padding: 100px 16px 32px;
       display: none;
       align-items: center;
       justify-content: center;
@@ -704,7 +739,7 @@ HTML_CONTENT = r'''<!doctype html>
       border-radius: 20px;
       max-width: 800px;
       width: 100%;
-      max-height: calc(100vh - 140px);
+      max-height: calc(100vh - 120px);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -732,10 +767,10 @@ HTML_CONTENT = r'''<!doctype html>
       justify-content: center;
       overflow: hidden;
       position: relative;
-      min-height: 240px;
+      min-height: 220px;
     }
     .modal-img {
-      max-height: 42vh;
+      max-height: 40vh;
       max-width: 100%;
       object-fit: contain;
       border-radius: 8px;
@@ -763,8 +798,8 @@ HTML_CONTENT = r'''<!doctype html>
       border-top: 1px solid var(--line);
       background: radial-gradient(circle at center, #1b1512 0%, #0B0B0C 70%);
     }
-    .closing h2 { font-size: clamp(36px, 4.5vw, 64px); margin-bottom: 20px; }
-    .closing p { font-size: 18px; color: var(--muted); max-width: 580px; margin: 0 auto 36px; }
+    .closing h2 { font-size: clamp(32px, 4.5vw, 64px); margin-bottom: 20px; }
+    .closing p { font-size: 17px; color: var(--muted); max-width: 580px; margin: 0 auto 36px; }
 
     /* Footer */
     .footer {
@@ -811,29 +846,75 @@ HTML_CONTENT = r'''<!doctype html>
     .input-group { margin-bottom: 18px; }
     .input-lbl { font-size: 12px; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; display: block; }
     .input-txt {
-      width: 100%; height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--paper-line);
-      background: #FFF; font-family: var(--font-sans); font-size: 14px; color: var(--ink); outline: none;
+      width: 100%; height: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--paper-line);
+      background: #FFF; font-family: var(--font-sans); font-size: 16px; color: var(--ink); outline: none;
     }
     .input-txt:focus { border-color: var(--ember); box-shadow: 0 0 0 3px rgba(232,116,42,0.15); }
     .summary-box {
       background: #FFF; border: 1px solid var(--paper-line); border-radius: 12px; padding: 16px; margin-bottom: 24px; font-size: 13px;
     }
 
-    /* Responsive */
+    /* Responsive Breakpoints & Device Settings */
     @media (max-width: 990px) {
+      .hero { padding-top: 110px; }
       .hero-grid { grid-template-columns: 1fr; }
       .com-layout { grid-template-columns: 1fr; }
       .plan-grid { grid-template-columns: 1fr; }
       .viewfinder-grid { grid-template-columns: 1fr; }
       .certs-grid { grid-template-columns: repeat(2, 1fr); }
       .footer-grid { grid-template-columns: 1fr; }
-      .showcase-card { position: static; height: 440px; margin-top: 24px; }
+      .showcase-card { position: static; height: 380px; margin-top: 20px; }
+      .hero-3d-box { height: 360px; }
     }
-    @media (max-width: 680px) {
+    @media (max-width: 768px) {
+      .topbar { display: none; }
+      .nav {
+        top: 14px;
+        height: 52px;
+        padding: 0 10px 0 16px;
+        border-radius: 14px;
+      }
+      .brand { font-size: 15px; }
+      .brand-mark { width: 10px; height: 10px; }
       .nav-links { display: none; }
-      .certs-grid { grid-template-columns: 1fr; }
+      .btn-desktop { display: none; }
+      .btn-mobile { display: inline-flex; height: 34px !important; padding: 0 10px !important; font-size: 12px !important; font-weight: 600; }
+      .nav-toggle {
+        display: inline-flex; width: 34px; height: 34px; border-radius: 8px; background: var(--surface-2);
+        border: 1px solid var(--line); color: var(--fg); font-size: 16px; align-items: center; justify-content: center; cursor: pointer;
+      }
+      .hero { padding-top: 86px; padding-bottom: 40px; }
+      .hero h1 { font-size: clamp(28px, 7.5vw, 42px); }
+      .hero-lead { font-size: 15.5px; margin-bottom: 24px; }
+      .hero-stats { grid-template-columns: 1fr; gap: 12px; }
+      .stmt-sec { padding: 60px 0; }
+      .stmt-text { font-size: clamp(20px, 5.5vw, 30px); }
+      .commodities { padding: 60px 0 80px; }
+      .planner { padding: 60px 0; border-radius: 20px; }
+      .plan-box { padding: 20px; }
       .stage-card { grid-template-columns: 50px 1fr; }
       .stage-metric { grid-column: 1 / -1; text-align: left; }
+      .trust-sec { padding: 70px 0; }
+      .closing { padding: 80px 0 60px; }
+      .modal-overlay { padding: 76px 12px 20px; }
+      .modal-card { max-height: calc(100vh - 90px); }
+      .modal-img { max-height: 36vh; }
+      .modal-foot { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
+      .modal-foot .btn { width: 100%; }
+      .drawer { border-radius: 18px 18px 0 0; }
+    }
+    @media (max-width: 520px) {
+      .certs-grid { grid-template-columns: 1fr; }
+      .hero-actions .btn { width: 100%; }
+      .hero-3d-box { height: 300px; padding: 16px; }
+      .showcase-card { height: 340px; padding: 18px; }
+      .pills { gap: 6px; }
+      .pill { min-height: 38px; padding: 6px 10px; font-size: 13px; }
+      .bar-head { font-size: 12px; }
+      .tab-btn { font-size: 13px; padding: 8px 14px; }
+      .vf-body { padding: 18px; }
+      .vf-title { font-size: 20px; }
+      .vf-desc { font-size: 14px; }
     }
   </style>
 </head>
@@ -866,7 +947,21 @@ HTML_CONTENT = r'''<!doctype html>
       <a href="#contact">Kontak</a>
     </nav>
     <div class="nav-right">
-      <button class="btn btn-light btn-sm" onclick="openDrawer()">Minta Penawaran Kontainer</button>
+      <button class="btn btn-light btn-sm btn-desktop" onclick="openDrawer()">Minta Penawaran Kontainer</button>
+      <button class="btn btn-light btn-sm btn-mobile" onclick="openDrawer()">RFQ →</button>
+      <button class="nav-toggle" onclick="toggleNavMenu()" aria-label="Menu navigasi">☰</button>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="nav-mobile-menu" id="nav-mobile-menu">
+      <a href="#commodities" onclick="toggleNavMenu()"><span>Komoditas</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">01</span></a>
+      <a href="#planner" onclick="toggleNavMenu()"><span>Kalkulator Kontainer</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">02</span></a>
+      <a href="#process" onclick="toggleNavMenu()"><span>Kualitas & Legal</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">03</span></a>
+      <a href="#trust" onclick="toggleNavMenu()"><span>Audit & Bukti</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--ember);">04</span></a>
+      <a href="#contact" onclick="toggleNavMenu()"><span>Kontak</span><span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">05</span></a>
+      <div style="padding-top: 10px; border-top: 1px solid var(--line); margin-top: 4px;">
+        <button class="btn btn-light btn-sm" style="width: 100%; justify-content: center; font-weight: 600;" onclick="toggleNavMenu(); openDrawer();">Minta Penawaran Kontainer</button>
+      </div>
     </div>
   </header>
 
@@ -1146,7 +1241,7 @@ HTML_CONTENT = r'''<!doctype html>
 
                 <div class="limit-badge" id="limit-box">
                   <span>●</span>
-                  <span id="limit-txt">Volume-limited: Kargo ini mengisi penuh volume kontainer sebelum menyentuh batas berat.</span>
+                  <span id="limit-txt">Volume-limited: Kargo ini mengisi penuh volume kontainer sebelum menyentuh batas berat kargo.</span>
                 </div>
               </div>
 
@@ -1466,7 +1561,7 @@ HTML_CONTENT = r'''<!doctype html>
     </div>
   </footer>
 
-  <!-- Inspect Certificate Modal (pt-28 clearance from floating nav) -->
+  <!-- Inspect Certificate Modal (pt-20 mobile / pt-28 desktop clearance from floating nav) -->
   <div class="modal-overlay" id="cert-modal" onclick="closeCertModal()">
     <div class="modal-card" onclick="event.stopPropagation()">
       <div class="modal-head">
@@ -1565,6 +1660,11 @@ HTML_CONTENT = r'''<!doctype html>
     var currentQty = 1;
     var currentInco = 'FOB';
     var currentCertRef = CERTS[0].ref;
+
+    function toggleNavMenu() {
+      var m = document.getElementById('nav-mobile-menu');
+      if (m) m.classList.toggle('open');
+    }
 
     /* ---------- Commodity Accordion & Tilt ---------- */
     function selectProduct(idx) {
@@ -1768,7 +1868,7 @@ HTML_CONTENT = r'''<!doctype html>
       });
     }
 
-    /* ---------- Three.js Detailed Realistic Glowing Coal Cube ---------- */
+    /* ---------- Three.js Detailed Realistic Glowing Coal Cube with Scroll Clamping ---------- */
     (function initThree() {
       var canvas = document.getElementById('gl');
       if (!canvas || !window.THREE) return;
@@ -1782,7 +1882,6 @@ HTML_CONTENT = r'''<!doctype html>
       var camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.set(0, 0, 7.5);
 
-      // Lights
       var ambLight = new THREE.AmbientLight(0xffffff, 0.25);
       scene.add(ambLight);
 
@@ -1793,7 +1892,6 @@ HTML_CONTENT = r'''<!doctype html>
       var heatLight = new THREE.PointLight(0xE8742A, 2.5, 8);
       scene.add(heatLight);
 
-      // Create procedural realistic burning charcoal bump & emissive texture
       function makeCoalTexture() {
         var cv = document.createElement('canvas');
         cv.width = 512; cv.height = 512;
@@ -1801,7 +1899,6 @@ HTML_CONTENT = r'''<!doctype html>
         ctx.fillStyle = '#161618';
         ctx.fillRect(0, 0, 512, 512);
 
-        // Carbon noise texture
         for (var i = 0; i < 4000; i++) {
           var x = Math.random() * 512, y = Math.random() * 512;
           var r = Math.random() * 2;
@@ -1809,7 +1906,6 @@ HTML_CONTENT = r'''<!doctype html>
           ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
         }
 
-        // Glowing orange crack veins
         ctx.strokeStyle = 'rgba(232, 116, 42, 0.75)';
         ctx.lineWidth = 3;
         for (var j = 0; j < 14; j++) {
@@ -1824,7 +1920,6 @@ HTML_CONTENT = r'''<!doctype html>
           ctx.stroke();
         }
 
-        // Intense core hot spots
         ctx.strokeStyle = 'rgba(255, 200, 80, 0.9)';
         ctx.lineWidth = 1.2;
         ctx.stroke();
@@ -1842,13 +1937,13 @@ HTML_CONTENT = r'''<!doctype html>
         metalness: 0.2,
         emissive: new THREE.Color(0xC95E1B),
         emissiveMap: coalTex,
-        emissiveIntensity: 0.75
+        emissiveIntensity: 0.75,
+        transparent: true
       });
 
       var coalCube = new THREE.Mesh(coalGeo, coalMat);
       scene.add(coalCube);
 
-      // Floating ember particles
       var partCount = 45;
       var partGeo = new THREE.BufferGeometry();
       var partPos = new Float32Array(partCount * 3);
@@ -1862,7 +1957,6 @@ HTML_CONTENT = r'''<!doctype html>
       var particles = new THREE.Points(partGeo, partMat);
       scene.add(particles);
 
-      // Responsive & Scroll positioning
       function onResize() {
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -1879,27 +1973,40 @@ HTML_CONTENT = r'''<!doctype html>
         coalCube.rotation.y = t * 0.35;
         particles.rotation.y = t * 0.08;
 
-        // Position cube in hero slot on desktop
+        // Position cube in hero slot on desktop vs mobile
         if (window.innerWidth > 990) {
           coalCube.position.set(2.4, 0.4, 0);
           particles.position.set(2.4, 0.4, 0);
         } else {
-          coalCube.position.set(0, 1.2, -1);
-          particles.position.set(0, 1.2, -1);
+          coalCube.position.set(0, 0.9, -1);
+          particles.position.set(0, 0.9, -1);
         }
 
-        // Pulse heating glow
-        var pulse = 0.65 + Math.sin(t * 3.0) * 0.18;
-        coalMat.emissiveIntensity = pulse;
-        heatLight.intensity = 2.0 + Math.sin(t * 3.0) * 0.8;
-        heatLight.position.copy(coalCube.position);
+        // Slot-based visibility clamping: Fades out cleanly as Hero section leaves viewport
+        var heroEl = document.getElementById('hero');
+        var heroVis = 1;
+        if (heroEl) {
+          var hr = heroEl.getBoundingClientRect();
+          heroVis = Math.min(1, Math.max(0, hr.bottom / 140));
+        }
+
+        var isVisible = heroVis > 0.005;
+        coalCube.visible = isVisible;
+        particles.visible = isVisible;
+
+        if (isVisible) {
+          var pulse = (0.65 + Math.sin(t * 3.0) * 0.18) * heroVis;
+          coalMat.emissiveIntensity = pulse;
+          coalMat.opacity = heroVis;
+          heatLight.intensity = (2.0 + Math.sin(t * 3.0) * 0.8) * heroVis;
+          heatLight.position.copy(coalCube.position);
+        }
 
         renderer.render(scene, camera);
       }
       animate();
     })();
 
-    // Initial setup
     updateSimulator();
   </script>
 </body>
