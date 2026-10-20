@@ -1,0 +1,1914 @@
+# -*- coding: utf-8 -*-
+"""
+Generator for nusantara-origin-landing-standalone.html
+Creates a single self-contained HTML file for external AI review and browser testing.
+All assets point to public high-reliability hosted CDN URLs (Vercel & raw GitHub & Unsplash).
+"""
+
+import os
+
+HTML_CONTENT = r'''<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NusantaraOrigin — Direct Indonesian Commodity & Coconut Charcoal Bulk Export</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --bg: #0B0B0C;
+      --surface: #141416;
+      --surface-2: #1B1B1E;
+      --line: rgba(245, 245, 244, 0.12);
+      --fg: #F5F5F4;
+      --muted: #8E8E93;
+      --ember: #E8742A;
+      --ember-deep: #C95E1B;
+      --paper: #F3F1EC;
+      --ink: #0B0B0C;
+      --ink-muted: #5F5E59;
+      --paper-line: #DAD6CC;
+      --white: #FFFFFF;
+      --ok: #3E8E5C;
+      --bad: #B3402A;
+      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-serif: "Instrument Serif", Georgia, serif;
+      --font-mono: "Geist Mono", monospace;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; color: var(--fg); }
+    em.serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--ember); font-size: 1.1em; letter-spacing: -0.01em; }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; border: none; background: none; cursor: pointer; }
+
+    /* Layout & Alignment */
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+    .label {
+      font-size: 13px;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+    .label::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ember); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 46px; padding: 0 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; white-space: nowrap;
+      transition: all 0.25s var(--ease); cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-light { background: var(--fg); color: var(--bg); font-weight: 600; }
+    .btn-light:hover { background: #fff; box-shadow: 0 4px 20px rgba(245,245,244,0.15); }
+    .btn-line { border: 1px solid var(--line); color: var(--fg); background: var(--surface); }
+    .btn-line:hover { border-color: rgba(245,245,244,0.3); background: var(--surface-2); }
+    .btn-ember { background: var(--ember); color: #fff; font-weight: 600; box-shadow: 0 4px 16px rgba(232,116,42,0.25); }
+    .btn-ember:hover { background: var(--ember-deep); box-shadow: 0 6px 24px rgba(232,116,42,0.4); }
+    .btn-sm { height: 38px; padding: 0 14px; font-size: 13px; }
+
+    /* Top Utility Bar */
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: #080809;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 7px 0;
+      position: relative;
+      z-index: 70;
+    }
+    .topbar .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+    /* Floating Navbar - 1240px Perfect Grid Flush Alignment */
+    .nav {
+      position: fixed;
+      z-index: 60;
+      top: 42px;
+      left: 50%;
+      width: min(1240px, calc(100% - 32px));
+      height: 58px;
+      transform: translate(-50%, 0);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 10px 0 20px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(20, 20, 22, 0.85);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      transition: transform 0.4s var(--ease), top 0.3s;
+    }
+    .nav.hide { transform: translate(-50%, -150%); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+    .brand-mark { width: 12px; height: 12px; border-radius: 3px; background: var(--ember); transform: rotate(45deg); }
+    .nav-links { display: flex; gap: 4px; align-items: center; }
+    .nav-links a {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--fg); background: rgba(245, 245, 244, 0.08); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    /* Fixed WebGL Background */
+    #gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 2;
+      padding-top: 140px;
+      padding-bottom: 80px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ember);
+      margin-bottom: 24px;
+    }
+    .hero h1 { font-size: clamp(34px, 4.2vw, 54px); margin-bottom: 20px; line-height: 1.08; }
+    .hero-lead { font-size: 17px; color: var(--muted); max-width: 540px; margin-bottom: 32px; line-height: 1.6; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 36px; }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+    }
+    .hero-stat-val { font-family: var(--font-mono); font-size: 22px; font-weight: 600; color: var(--fg); }
+    .hero-stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* 3D Heating Cube Hero Slot */
+    .hero-3d-box {
+      width: 100%;
+      height: 440px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: radial-gradient(circle at center, #1b1715 0%, #0c0b0c 80%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+    }
+    .box-hud {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      z-index: 5;
+    }
+    .box-hud-pill {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--ember);
+    }
+
+    /* Statement Section */
+    .stmt-sec {
+      position: relative;
+      z-index: 2;
+      padding: 90px 0;
+      border-top: 1px solid var(--line);
+      background: #09090A;
+    }
+    .stmt-text {
+      font-size: clamp(26px, 3.2vw, 42px);
+      max-width: 960px;
+      line-height: 1.25;
+      color: var(--fg);
+    }
+
+    /* Commodities Section */
+    .commodities {
+      position: relative;
+      z-index: 2;
+      padding: 100px 0;
+      border-top: 1px solid var(--line);
+    }
+    .com-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    .com-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .com-item.active {
+      border-color: var(--ember);
+      background: var(--surface-2);
+      box-shadow: 0 8px 30px rgba(232,116,42,0.08);
+    }
+    .com-head {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .com-num { font-family: var(--font-mono); font-size: 13px; color: var(--ember); }
+    .com-title { font-size: 18px; font-weight: 500; }
+    .com-fob { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    .com-body {
+      padding: 0 24px 24px;
+      display: none;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+    .com-item.active .com-body { display: block; }
+    .com-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+      padding: 12px;
+      background: #111113;
+      border-radius: 8px;
+    }
+    .com-spec-val { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--fg); }
+    .com-spec-lbl { font-size: 11px; color: var(--muted); }
+
+    /* 3D Tilt Commodity Showcase Card */
+    .showcase-card {
+      position: sticky;
+      top: 120px;
+      height: 520px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: radial-gradient(circle at center, #241d18 0%, #0B0B0C 85%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px;
+      perspective: 1000px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.85);
+    }
+    .tilt-product-img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82%;
+      max-height: 340px;
+      object-fit: contain;
+      filter: drop-shadow(0 35px 45px rgba(0,0,0,0.92)) contrast(110%);
+      transition: transform 0.15s ease-out;
+      pointer-events: none;
+    }
+
+    /* Container Planner Section (Light Band) */
+    .planner {
+      position: relative;
+      z-index: 2;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 100px 0;
+      border-radius: 32px;
+      margin: 40px 0;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    }
+    .planner h2 { color: var(--ink); font-size: clamp(30px, 3.8vw, 48px); margin-bottom: 12px; }
+    .planner .lead { color: var(--ink-muted); max-width: 620px; margin-bottom: 40px; font-size: 17px; }
+    .plan-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+    }
+    .plan-box {
+      background: #FFFFFF;
+      border: 1px solid var(--paper-line);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    }
+    .ctrl-row { margin-bottom: 24px; }
+    .ctrl-lbl { font-size: 13px; font-weight: 600; text-transform: uppercase; font-family: var(--font-mono); color: var(--ink-muted); margin-bottom: 10px; display: block; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--paper-line);
+      background: var(--paper);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .pill.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .qty-ctrl { display: flex; align-items: center; gap: 14px; }
+    .qty-btn { width: 42px; height: 42px; border-radius: 10px; background: var(--paper); border: 1px solid var(--paper-line); font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .qty-btn:hover { background: #E4E0D6; }
+    .qty-val { font-family: var(--font-mono); font-size: 20px; font-weight: 600; min-width: 40px; text-align: center; }
+
+    /* Container Capacity Bars */
+    .capacity-bars { margin: 28px 0; }
+    .bar-row { margin-bottom: 16px; }
+    .bar-head { display: flex; justify-content: space-between; font-size: 13px; font-family: var(--font-mono); margin-bottom: 6px; }
+    .bar-track { height: 10px; background: #E5E2D9; border-radius: 100px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s var(--ease); }
+    .bar-fill-payload { background: var(--ember); width: 62%; }
+    .bar-fill-vol { background: #2A6844; width: 95%; }
+
+    .limit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: #FDF3EB;
+      color: var(--ember-deep);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+      border: 1px solid rgba(232,116,42,0.25);
+    }
+
+    /* Process Section */
+    .process-sec {
+      position: relative;
+      z-index: 2;
+      padding: 100px 0;
+      border-top: 1px solid var(--line);
+    }
+    .stages-list { list-style: none; margin-top: 40px; }
+    .stage-card {
+      display: grid;
+      grid-template-columns: 80px 1fr 140px;
+      gap: 20px;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .stage-idx { font-family: var(--font-mono); font-size: 20px; font-weight: 600; color: var(--ember); }
+    .stage-info h4 { font-size: 18px; margin-bottom: 4px; }
+    .stage-info p { font-size: 14px; color: var(--muted); }
+    .stage-metric { font-family: var(--font-mono); font-size: 13px; color: var(--ok); text-align: right; }
+
+    /* Section Audit & Physical Proof (#trust) */
+    .trust-sec {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #0B0B0C;
+      padding: 100px 0;
+      scroll-margin-top: 100px;
+    }
+    .tabs-wrap { display: flex; gap: 12px; margin-bottom: 40px; }
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--fg);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--fg);
+      color: var(--bg);
+      font-weight: 600;
+      border-color: var(--fg);
+    }
+
+    /* Inspection Viewfinder */
+    .viewfinder-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .viewfinder-main {
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+    }
+    .vf-img-wrap {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: #000;
+      overflow: hidden;
+    }
+    .vf-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s;
+    }
+    .vf-badge-tl {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(11,11,12,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vf-badge-tr {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(11,11,12,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ember);
+    }
+    .vf-body { padding: 28px; }
+    .vf-subhead { font-family: var(--font-mono); font-size: 12px; color: var(--ember); margin-bottom: 4px; font-weight: 500; }
+    .vf-title { font-size: 24px; margin-bottom: 8px; }
+    .vf-desc { font-size: 15px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+    .vf-points { list-style: none; display: grid; gap: 8px; font-size: 14px; color: #D1D1D6; }
+    .vf-points li { display: flex; align-items: center; gap: 10px; }
+    .vf-points li::before { content: "✓"; color: var(--ok); font-weight: bold; }
+
+    /* Gallery Thumbnails List */
+    .vf-thumbs { display: flex; flex-direction: column; gap: 12px; }
+    .vf-thumb-btn {
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+    .vf-thumb-btn.active {
+      background: var(--surface-2);
+      border-color: var(--ember);
+      box-shadow: 0 6px 24px rgba(232,116,42,0.1);
+    }
+    .vf-thumb-num { font-family: var(--font-mono); font-size: 12px; color: var(--ember); margin-bottom: 2px; }
+    .vf-thumb-name { font-size: 16px; font-weight: 500; color: var(--fg); }
+    .vf-thumb-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Verified Credentials Cards Grid */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .cert-card {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .cert-card:hover {
+      border-color: rgba(232,116,42,0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+    }
+    .cert-preview-frame {
+      height: 220px;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .cert-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      opacity: 0.82;
+      transition: transform 0.6s;
+    }
+    .cert-card:hover .cert-preview-img { transform: scale(1.05); }
+    .cert-watermark-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      pointer-events: none;
+      background: repeating-linear-gradient(-35deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 25px, rgba(232,116,42,0.12) 25px, rgba(232,116,42,0.12) 50px);
+    }
+    .cert-watermark-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      line-height: 1.8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .cert-tag-issuer {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(11,11,12,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ember);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .cert-tag-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(11,11,12,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ok);
+      padding: 3px 8px;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cert-meta {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .cert-ref { font-family: var(--font-mono); font-size: 11px; color: var(--ember); font-weight: 500; }
+    .cert-date { font-family: var(--font-mono); font-size: 10px; color: var(--ok); background: rgba(62,142,92,0.12); padding: 2px 6px; border-radius: 4px; }
+    .cert-title { font-size: 15px; font-weight: 500; color: var(--fg); line-height: 1.3; margin: 4px 0 8px; }
+    .cert-desc { font-size: 12px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Fitts's & Hick's Law Full-Width Stacked Buttons */
+    .cert-actions-stack {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-cert-primary {
+      width: 100%;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: var(--ember);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(232,116,42,0.2);
+    }
+    .btn-cert-primary:hover { background: var(--ember-deep); transform: translateY(-1px); }
+    .btn-cert-secondary {
+      width: 100%;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--fg);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-cert-secondary:hover { background: #26262B; border-color: rgba(255,255,255,0.2); }
+
+    /* Inspect Modal Dialog with pt-28 navbar spacing */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(14px);
+      padding: 110px 16px 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #141416;
+      border: 1px solid rgba(245,245,244,0.18);
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      max-height: calc(100vh - 140px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.95);
+      position: relative;
+    }
+    .modal-head {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 10px; background: var(--surface-2);
+      border: 1px solid var(--line); color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .modal-close:hover { background: #2A2A30; }
+    .modal-body {
+      padding: 24px;
+      background: #080809;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      min-height: 240px;
+    }
+    .modal-img {
+      max-height: 42vh;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      filter: contrast(115%);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+    }
+    .modal-foot {
+      padding: 18px 24px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Closing & RFQ Section */
+    .closing {
+      position: relative;
+      z-index: 2;
+      padding: 120px 0;
+      text-align: center;
+      border-top: 1px solid var(--line);
+      background: radial-gradient(circle at center, #1b1512 0%, #0B0B0C 70%);
+    }
+    .closing h2 { font-size: clamp(36px, 4.5vw, 64px); margin-bottom: 20px; }
+    .closing p { font-size: 18px; color: var(--muted); max-width: 580px; margin: 0 auto 36px; }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 60px 0 40px;
+      background: #070708;
+      font-size: 13px;
+      color: var(--muted);
+      position: relative;
+      z-index: 2;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-bottom {
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Smart RFQ Slide-Over Drawer */
+    .drawer-scrim {
+      position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden; transition: opacity 0.4s;
+    }
+    .drawer-scrim.open { opacity: 1; visibility: visible; }
+    .drawer {
+      position: fixed; z-index: 90; top: 0; right: 0; width: min(520px, 100%); height: 100%;
+      background: var(--paper); color: var(--ink); border-radius: 20px 0 0 20px;
+      display: flex; flex-direction: column; transform: translateX(105%); transition: transform 0.4s var(--ease);
+      box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    }
+    .drawer.open { transform: none; }
+    .dr-head { padding: 24px 28px; border-bottom: 1px solid var(--paper-line); display: flex; justify-content: space-between; align-items: center; }
+    .dr-body { padding: 28px; overflow-y: auto; flex: 1; }
+    .dr-foot { padding: 20px 28px; border-top: 1px solid var(--paper-line); display: flex; gap: 12px; background: #EBE8E0; }
+    .input-group { margin-bottom: 18px; }
+    .input-lbl { font-size: 12px; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; display: block; }
+    .input-txt {
+      width: 100%; height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--paper-line);
+      background: #FFF; font-family: var(--font-sans); font-size: 14px; color: var(--ink); outline: none;
+    }
+    .input-txt:focus { border-color: var(--ember); box-shadow: 0 0 0 3px rgba(232,116,42,0.15); }
+    .summary-box {
+      background: #FFF; border: 1px solid var(--paper-line); border-radius: 12px; padding: 16px; margin-bottom: 24px; font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 990px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .com-layout { grid-template-columns: 1fr; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .viewfinder-grid { grid-template-columns: 1fr; }
+      .certs-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr; }
+      .showcase-card { position: static; height: 440px; margin-top: 24px; }
+    }
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+      .certs-grid { grid-template-columns: 1fr; }
+      .stage-card { grid-template-columns: 50px 1fr; }
+      .stage-metric { grid-column: 1 / -1; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="topbar">
+    <div class="wrap">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="pulse-dot"></span>
+        <span>EKSPORTIR RESMI TERVERIFIKASI RI • NIB: 9120301928371</span>
+      </div>
+      <div>
+        <span>PELABUHAN: TANJUNG PERAK (SUB) & TANJUNG PRIOK (JKT) • EXW / FOB / CIF</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Navigation Bar (Aligned 1240px to .wrap) -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="brand" aria-label="NusantaraOrigin">
+      <span class="brand-mark"></span>
+      <span>NusantaraOrigin</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#commodities">Komoditas</a>
+      <a href="#planner">Kalkulator Kontainer</a>
+      <a href="#process">Kualitas & Legal</a>
+      <a href="#trust">Audit & Bukti</a>
+      <a href="#contact">Kontak</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn btn-light btn-sm" onclick="openDrawer()">Minta Penawaran Kontainer</button>
+    </div>
+  </header>
+
+  <!-- Fixed WebGL Background -->
+  <canvas id="gl"></canvas>
+
+  <main>
+    <!-- 1. Hero Section -->
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge">HS CODE: 4402.90.10 • 0901.11.10 • DIRECT BULK EXPORT</div>
+            <h1>Briket Arang Kelapa & Komoditas Agro Indonesia, <em class="serif">Tersertifikasi Laboratorium</em>.</h1>
+            <p class="hero-lead">Memasok 350+ Metrik Ton per bulan ke Timur Tengah, Eropa, dan Amerika. Formulasi abu rendah konsisten (&lt; 2.2%), inspeksi SGS independen, serta ketentuan pembayaran L/C atau T/T fleksibel.</p>
+            <div class="hero-actions">
+              <a href="#planner" class="btn btn-ember">Kalkulasi Muatan Kontainer & Harga FOB</a>
+              <button class="btn btn-line" onclick="openDrawer()">Pesan Sampel Gratis 2 Kg (DHL)</button>
+            </div>
+            <div class="hero-stats">
+              <div>
+                <div class="hero-stat-val">350 MT</div>
+                <div class="hero-stat-lbl">Kapasitas Produksi Bulanan</div>
+              </div>
+              <div>
+                <div class="hero-stat-val">&lt; 2.2%</div>
+                <div class="hero-stat-lbl">Kadar Abu Briket Shisha</div>
+              </div>
+              <div>
+                <div class="hero-stat-val">25 KM</div>
+                <div class="hero-stat-lbl">Jarak Pabrik ke Pelabuhan</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero 3D Heating Coal Cube -->
+          <div class="hero-3d-box">
+            <div class="box-hud">
+              <span class="box-hud-pill">3D LIVE HEATING SIMULATION</span>
+              <span style="font-family: var(--font-mono); color: var(--ok);">TEMP: 680°C • GLOWING</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; display: flex; justify-content: space-between;">
+              <span>COCONUT CHARCOAL 25MM CUBE</span>
+              <span style="color: var(--ember);">BURNING DURATION: 2.5 HOURS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Editorial Statement -->
+    <section class="stmt-sec">
+      <div class="wrap">
+        <p class="stmt-text">Kami mengapalkan bumi nusantara, <em class="serif">kontainer demi kontainer</em>. Dari pembakaran tempurung kelapa hingga stuffing bersegel ISO di Pelabuhan Tanjung Perak.</p>
+      </div>
+    </section>
+
+    <!-- 3. What We Ship (Commodities Showcase) -->
+    <section class="commodities" id="commodities">
+      <div class="wrap">
+        <div style="margin-bottom: 40px;">
+          <p class="label">KOMODITAS EKSPOR UTAMA</p>
+          <h2 style="font-size: clamp(30px, 3.6vw, 46px); margin-top: 8px;">Spesifikasi presisi, <em class="serif">siap berlayar</em> ke pelabuhan Anda.</h2>
+        </div>
+
+        <div class="com-layout">
+          <!-- Accordion List -->
+          <div>
+            <!-- Item 0: Shisha Charcoal -->
+            <div class="com-item active" onclick="selectProduct(0)" id="com-0">
+              <div class="com-head">
+                <span class="com-num">01</span>
+                <span class="com-title">Shisha Coconut Charcoal Briquettes</span>
+                <span class="com-fob">FOB from $1,280 / MT</span>
+              </div>
+              <div class="com-body">
+                <p style="font-size: 14px; color: var(--muted); line-height: 1.6;">100% arang tempurung kelapa murni tanpa campuran kayu. Abu putih bersih, tanpa asap, tanpa bau menusuk, dan panas bertahan hingga 2.5 jam.</p>
+                <div class="com-specs-grid">
+                  <div>
+                    <div class="com-spec-val">&lt; 2.2%</div>
+                    <div class="com-spec-lbl">Kadar Abu (Ash)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">&lt; 4.5%</div>
+                    <div class="com-spec-lbl">Kadar Air (Moisture)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">7,500+</div>
+                    <div class="com-spec-lbl">Kalori (kcal/kg)</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-line" onclick="prefillAndPlan(0)">Rencanakan Kontainer Ini →</button>
+              </div>
+            </div>
+
+            <!-- Item 1: BBQ Charcoal -->
+            <div class="com-item" onclick="selectProduct(1)" id="com-1">
+              <div class="com-head">
+                <span class="com-num">02</span>
+                <span class="com-title">BBQ Hardwood & Coconut Hexagonal</span>
+                <span class="com-fob">FOB from $890 / MT</span>
+              </div>
+              <div class="com-body">
+                <p style="font-size: 14px; color: var(--muted); line-height: 1.6;">Briket silinder heksagonal berlubang tengah untuk sirkulasi udara optimal. Dirancang untuk restoran steak, yakiniku, dan pemanggangan komersial intensitas tinggi.</p>
+                <div class="com-specs-grid">
+                  <div>
+                    <div class="com-spec-val">&lt; 4.5%</div>
+                    <div class="com-spec-lbl">Kadar Abu (Ash)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">&lt; 6.0%</div>
+                    <div class="com-spec-lbl">Kadar Air (Moisture)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">7,200+</div>
+                    <div class="com-spec-lbl">Kalori (kcal/kg)</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-line" onclick="prefillAndPlan(1)">Rencanakan Kontainer Ini →</button>
+              </div>
+            </div>
+
+            <!-- Item 2: Green Coffee -->
+            <div class="com-item" onclick="selectProduct(2)" id="com-2">
+              <div class="com-head">
+                <span class="com-num">03</span>
+                <span class="com-title">Sumatra Mandheling Arabica Green Beans</span>
+                <span class="com-fob">FOB from $6,400 / MT</span>
+              </div>
+              <div class="com-body">
+                <p style="font-size: 14px; color: var(--muted); line-height: 1.6;">Biji kopi mentah Grade 1 proses giling basah (wet-hulled / Giling Basah khas Sumatera Utara). Cita rasa earthy, body tebal, dan aroma cokelat rempah memikat.</p>
+                <div class="com-specs-grid">
+                  <div>
+                    <div class="com-spec-val">&lt; 12.0%</div>
+                    <div class="com-spec-lbl">Kadar Air (Moisture)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">Grade 1</div>
+                    <div class="com-spec-lbl">Defek Fisik (Max 11)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">Screen 16+</div>
+                    <div class="com-spec-lbl">Ukuran Biji (Size)</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-line" onclick="prefillAndPlan(2)">Rencanakan Kontainer Ini →</button>
+              </div>
+            </div>
+
+            <!-- Item 3: Spices -->
+            <div class="com-item" onclick="selectProduct(3)" id="com-3">
+              <div class="com-head">
+                <span class="com-num">04</span>
+                <span class="com-title">Whole Spices: Maluku Cloves & Cinnamon</span>
+                <span class="com-fob">FOB from $7,800 / MT</span>
+              </div>
+              <div class="com-body">
+                <p style="font-size: 14px; color: var(--muted); line-height: 1.6;">Cengkeh Lalpari Maluku petik tangan berwarna cokelat kemerahan berkadar minyak eugenol tinggi, berpadu kayu manis Korintje Cassia Sumatra berkualitas ekspor.</p>
+                <div class="com-specs-grid">
+                  <div>
+                    <div class="com-spec-val">19%+</div>
+                    <div class="com-spec-lbl">Eugenol Oil Content</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">&lt; 11.5%</div>
+                    <div class="com-spec-lbl">Kadar Air (Moisture)</div>
+                  </div>
+                  <div>
+                    <div class="com-spec-val">Clean Handpicked</div>
+                    <div class="com-spec-lbl">Sortir Kemurnian</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-line" onclick="prefillAndPlan(3)">Rencanakan Kontainer Ini →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3D Parallax Tilt Showcase Card -->
+          <div class="showcase-card" id="showcase-card">
+            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; z-index: 2;">
+              <span id="sc-hs" style="color: var(--ember);">HS 4402.90.10</span>
+              <span style="color: var(--ok);">BATCH CERTIFIED • 3D TILT PREVIEW</span>
+            </div>
+
+            <!-- Authentic Documentary Cutout Asset (Never breaks outside project folder) -->
+            <img id="sc-img" class="tilt-product-img" src="https://nusantara-export-template-1.vercel.app/img/shisha-charcoal-cutout.png" onerror="this.src='https://raw.githubusercontent.com/fadlanhy-rpl/nusantara-export-template-1/main/public/img/shisha-charcoal-cutout.png'" alt="Product 3D Cutout">
+
+            <div style="z-index: 2; border-top: 1px solid var(--line); padding-top: 14px; display: flex; justify-content: space-between; align-items: flex-end;">
+              <div>
+                <div id="sc-name" style="font-size: 18px; font-weight: 600;">Shisha Coconut Charcoal</div>
+                <div id="sc-origin" style="font-family: var(--font-mono); font-size: 12px; color: var(--muted);">Origin: Gresik, East Java • Factory Direct</div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">MOUSE TILT ACTIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Plan Your Container (Container Price Simulator) -->
+    <section class="planner" id="planner">
+      <div class="wrap">
+        <h2>Rencanakan muatan kontainer Anda.</h2>
+        <p class="lead">Simulasikan batas tonase, volume kubikasi, dan estimasi harga FOB secara transparan sebelum menerbitkan Letter of Intent (LOI).</p>
+
+        <div class="plan-grid">
+          <!-- Left Controls -->
+          <div class="plan-box">
+            <div class="ctrl-row">
+              <label class="ctrl-lbl">1. Pilih Komoditas</label>
+              <div class="pills" id="p-prod">
+                <button class="pill active" onclick="setSimProd(0)">01 Shisha Charcoal</button>
+                <button class="pill" onclick="setSimProd(1)">02 BBQ Charcoal</button>
+                <button class="pill" onclick="setSimProd(2)">03 Green Coffee</button>
+                <button class="pill" onclick="setSimProd(3)">04 Whole Spices</button>
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-lbl">2. Ukuran Kontainer ISO</label>
+              <div class="pills" id="p-box">
+                <button class="pill active" onclick="setSimBox('40hc')">40ft High Cube (76.4 m³)</button>
+                <button class="pill" onclick="setSimBox('20ft')">20ft Standard (33.2 m³)</button>
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-lbl">3. Jumlah Kontainer</label>
+              <div class="qty-ctrl">
+                <button class="qty-btn" onclick="stepQty(-1)">-</button>
+                <span class="qty-val" id="qty-disp">1</span>
+                <button class="qty-btn" onclick="stepQty(1)">+</button>
+                <span style="font-size: 14px; color: var(--ink-muted); margin-left: 8px;">Kontainer (FCL)</span>
+              </div>
+            </div>
+
+            <div class="ctrl-row" style="margin-bottom: 0;">
+              <label class="ctrl-lbl">4. Incoterms Pelayaran</label>
+              <div class="pills" id="p-inco">
+                <button class="pill active" onclick="setSimInco('FOB')">FOB Surabaya (IDSUB)</button>
+                <button class="pill" onclick="setSimInco('CIF')">CIF Destination Port</button>
+                <button class="pill" onclick="setSimInco('EXW')">EXW Factory (Gresik)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Calculation Card -->
+          <div class="plan-box" style="background: #F8F7F2; border-color: #E2DFD6; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-bottom: 6px;">
+                <span>ANALISIS KAPASITAS KARGO</span>
+                <span id="c-dims">12.03 × 2.35 × 2.69 m internal</span>
+              </div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--ink);" id="c-cargo-name">Shisha Coconut Charcoal</div>
+
+              <!-- Capacity Bars -->
+              <div class="capacity-bars">
+                <div class="bar-row">
+                  <div class="bar-head">
+                    <span>Payload Used (Tonase)</span>
+                    <b id="pct-pay">62%</b>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill bar-fill-payload" id="bar-pay" style="width: 62%;"></div>
+                  </div>
+                </div>
+
+                <div class="bar-row">
+                  <div class="bar-head">
+                    <span>Volume Used (Kubikasi m³)</span>
+                    <b id="pct-vol">95%</b>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill bar-fill-vol" id="bar-vol" style="width: 95%;"></div>
+                  </div>
+                </div>
+
+                <div class="limit-badge" id="limit-box">
+                  <span>●</span>
+                  <span id="limit-txt">Volume-limited: Kargo ini mengisi penuh volume kontainer sebelum menyentuh batas berat.</span>
+                </div>
+              </div>
+
+              <!-- Pricing Calculation -->
+              <div style="border-top: 1px solid var(--paper-line); padding-top: 16px; margin-top: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+                  <span style="font-size: 14px; color: var(--ink-muted);">Estimasi Muatan Bersih:</span>
+                  <b style="font-family: var(--font-mono); font-size: 18px;" id="c-weight">25.0 Metrik Ton</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                  <span style="font-size: 14px; color: var(--ink-muted);">Indikasi Harga FOB:</span>
+                  <b style="font-family: var(--font-mono); font-size: 24px; color: var(--ember-deep);" id="c-price">$1,280 - $1,340 / MT</b>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-dark" style="width: 100%; margin-top: 24px; height: 50px; font-size: 15px;" onclick="openDrawerWithPlan()">
+              Minta Penawaran Resmi Dari Kalkulator Ini →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. How a Batch is Made (Methodology) -->
+    <section class="process-sec" id="process">
+      <div class="wrap">
+        <div>
+          <p class="label">METODOLOGI PRODUKSI</p>
+          <h2 style="font-size: clamp(30px, 3.6vw, 46px); margin-top: 8px;">Ketat tanpa celah, <em class="serif">dari tempurung</em> hingga stuffing.</h2>
+        </div>
+
+        <ul class="stages-list">
+          <li class="stage-card">
+            <span class="stage-idx">01</span>
+            <div class="stage-info">
+              <h4>Pirolisis Karbonisasi Tempurung Pilihan</h4>
+              <p>Hanya tempurung kelapa tua kering dari petani lokal Jawa & Sulawesi, dibakar dalam drum pirolisis terkontrol tanpa polusi.</p>
+            </div>
+            <div class="stage-metric">Carbon &gt; 80%</div>
+          </li>
+          <li class="stage-card">
+            <span class="stage-idx">02</span>
+            <div class="stage-info">
+              <h4>Crushing & Mesh 60 Vibrating Sieve</h4>
+              <p>Penggilingan arang menjadi bubuk mikro 60 mesh untuk memastikan kerapatan padat dan tidak meninggalkan pori rongga udara rapuh.</p>
+            </div>
+            <div class="stage-metric">Mesh 60 Sieve</div>
+          </li>
+          <li class="stage-card">
+            <span class="stage-idx">03</span>
+            <div class="stage-info">
+              <h4>Pencampuran Binder Nabati Organik (Tapioka 2.5%)</h4>
+              <p>Murni menggunakan pati tapioka alami berkualitas pangan. Bebas bahan kimia sintetis, belerang, sodium nitrat, atau pemantik buatan.</p>
+            </div>
+            <div class="stage-metric">Zero Chemical</div>
+          </li>
+          <li class="stage-card">
+            <span class="stage-idx">04</span>
+            <div class="stage-info">
+              <h4>Ekstrusi Tekanan Tinggi Hidrolik & Presisi Kubus</h4>
+              <p>Kompresi hidrolik bertenaga tinggi membentuk balok padat yang dipotong akurat (25x25x25mm atau 26x26x26mm) tanpa serpihan rontok.</p>
+            </div>
+            <div class="stage-metric">Drop Test &gt; 1.5m</div>
+          </li>
+          <li class="stage-card">
+            <span class="stage-idx">05</span>
+            <div class="stage-info">
+              <h4>Pengeringan Oven Kiln 72 Jam Suhu Stabil</h4>
+              <p>Proses oven bertahap 70°C selama 3 hari untuk menurunkan kadar air hingga stabil di bawah 4.5% sebelum packing master karton.</p>
+            </div>
+            <div class="stage-metric">Moisture &lt; 4.5%</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. Physical Audit & Legal Evidence Section (#trust) -->
+    <section class="trust-sec" id="trust">
+      <div class="wrap">
+        <div style="margin-bottom: 32px;">
+          <p class="label">BUKTI FISIK & AUDIT DOKUMEN</p>
+          <h2 style="font-size: clamp(30px, 3.6vw, 46px); margin-top: 8px;">Fasilitas fisik, <em class="serif">stuffing</em> terverifikasi.</h2>
+          <p style="color: var(--muted); font-size: 16px; margin-top: 10px; max-width: 680px;">Transparansi penuh untuk buyer B2B internasional. Verifikasi visual fasilitas gudang, protokol desikan kontainer, dan sertifikasi laboratorium akreditasi.</p>
+        </div>
+
+        <!-- Global Standard Switcher Tabs -->
+        <div class="tabs-wrap">
+          <button class="tab-btn active" id="btn-tab-gallery" onclick="switchTrustTab('gallery')">
+            <span style="color: var(--ember);">■</span> Inspeksi Fisik Fasilitas & Stuffing
+          </button>
+          <button class="tab-btn" id="btn-tab-certs" onclick="switchTrustTab('certs')">
+            <span style="color: var(--ember);">■</span> Kredensial & Laporan Lab Terverifikasi
+          </button>
+        </div>
+
+        <!-- Tab 1: Interactive Viewfinder Gallery -->
+        <div id="trust-gallery" class="viewfinder-grid">
+          <div class="viewfinder-main">
+            <div class="vf-img-wrap">
+              <img id="vf-img" class="vf-img" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1400&q=85" alt="Inspection Viewfinder">
+              <div class="vf-badge-tl">
+                <span class="pulse-dot"></span>
+                <span id="vf-tag">BUFFER FACILITY</span>
+              </div>
+              <div class="vf-badge-tr" id="vf-loc">Gresik Industrial Estate</div>
+            </div>
+            <div class="vf-body">
+              <div class="vf-subhead" id="vf-stage">STAGE 01 OF 04</div>
+              <h3 class="vf-title" id="vf-title">Fasilitas Gudang Kargo Kering & Paletisasi</h3>
+              <p class="vf-desc" id="vf-desc">Area penyimpanan briket terhindar dari kelembapan lantai dengan sirkulasi udara terkontrol, siap muat ke dalam kontainer ekspor.</p>
+              <ul class="vf-points" id="vf-points">
+                <li>Bays penyimpanan iklim terkendali (climate-controlled)</li>
+                <li>Penghalang kelembapan lantai & sensor kelembapan udara</li>
+                <li>Organisasi master karton terpaletisasi untuk pemuatan cepat</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Thumbnails Selector -->
+          <div class="vf-thumbs">
+            <div class="vf-thumb-btn active" onclick="selectGallery(0)" id="th-0">
+              <div class="vf-thumb-num">STAGE 01</div>
+              <div class="vf-thumb-name">Gudang & Paletisasi Kargo</div>
+              <div class="vf-thumb-meta">350 MT Capacity • Moisture Barrier</div>
+            </div>
+            <div class="vf-thumb-btn" onclick="selectGallery(1)" id="th-1">
+              <div class="vf-thumb-num">STAGE 02</div>
+              <div class="vf-thumb-name">Stuffing & Kutub Desikan</div>
+              <div class="vf-thumb-meta">Super Dry 2000g • RH &lt; 60% Protocol</div>
+            </div>
+            <div class="vf-thumb-btn" onclick="selectGallery(2)" id="th-2">
+              <div class="vf-thumb-num">STAGE 03</div>
+              <div class="vf-thumb-name">Gerbang Pelabuhan Muat</div>
+              <div class="vf-thumb-meta">Tanjung Perak, Surabaya (IDSUB)</div>
+            </div>
+            <div class="vf-thumb-btn" onclick="selectGallery(3)" id="th-3">
+              <div class="vf-thumb-num">STAGE 04</div>
+              <div class="vf-thumb-name">Segel ISO 17712 Bolt Seal</div>
+              <div class="vf-thumb-meta">Tamper-Proof Serial Logged on B/L</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Verified Laboratory & Legal Credentials Vault -->
+        <div id="trust-certs" class="certs-grid" style="display: none;">
+          <!-- Card 1: SGS COA -->
+          <div class="cert-card">
+            <div class="cert-preview-frame" onclick="openCertModal(0)">
+              <img class="cert-preview-img" src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80" alt="SGS COA">
+              <div class="cert-watermark-overlay">
+                <div class="cert-watermark-text">PT NUSANTARA AGRO CHARCOAL • OFFICIAL COPY • VERIFY VIA WHATSAPP</div>
+              </div>
+              <span class="cert-tag-issuer">SGS Indonesia</span>
+              <span class="cert-tag-status">✓ Terverifikasi</span>
+            </div>
+            <div class="cert-meta">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span class="cert-ref">SGS-SUB-2026-88194-COA</span>
+                  <span class="cert-date">Oktober 2026</span>
+                </div>
+                <h4 class="cert-title">SGS Certificate of Analysis (COA Batch Test)</h4>
+                <p class="cert-desc">Analisis proksimat independen laboratorium SGS memverifikasi kadar abu 2.1%, kadar air 4.5%, dan kalori 7.580 kkal/kg untuk ekspor internasional.</p>
+              </div>
+              <div class="cert-actions-stack">
+                <button class="btn-cert-primary" onclick="openDrawerWithCert('SGS-SUB-2026-88194-COA')">
+                  <span>🔒 Minta PDF Resmi Tanpa Redaksi</span>
+                  <span>→</span>
+                </button>
+                <button class="btn-cert-secondary" onclick="openCertModal(0)">
+                  <span>👁 Periksa Dokumen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: MSDS Non-DG -->
+          <div class="cert-card">
+            <div class="cert-preview-frame" onclick="openCertModal(1)">
+              <img class="cert-preview-img" src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80" alt="MSDS Non-DG">
+              <div class="cert-watermark-overlay">
+                <div class="cert-watermark-text">PT NUSANTARA AGRO CHARCOAL • OFFICIAL COPY • VERIFY VIA WHATSAPP</div>
+              </div>
+              <span class="cert-tag-issuer">Lab Surveyor Maritim</span>
+              <span class="cert-tag-status">✓ Terverifikasi</span>
+            </div>
+            <div class="cert-meta">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span class="cert-ref">MSDS-IMDG-SP925-NON-DG</span>
+                  <span class="cert-date">Januari 2026</span>
+                </div>
+                <h4 class="cert-title">MSDS & IMO Self-Heating Non-DG Declaration</h4>
+                <p class="cert-desc">Lolos uji pemanasan spontan PBB (UN 3313). Bersertifikat muatan Non-DG aman untuk pelayaran kargo laut sesuai SP 925 tanpa risiko kebakaran.</p>
+              </div>
+              <div class="cert-actions-stack">
+                <button class="btn-cert-primary" onclick="openDrawerWithCert('MSDS-IMDG-SP925-NON-DG')">
+                  <span>🔒 Minta PDF Resmi Tanpa Redaksi</span>
+                  <span>→</span>
+                </button>
+                <button class="btn-cert-secondary" onclick="openCertModal(1)">
+                  <span>👁 Periksa Dokumen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: NIB License -->
+          <div class="cert-card">
+            <div class="cert-preview-frame" onclick="openCertModal(2)">
+              <img class="cert-preview-img" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" alt="NIB License">
+              <div class="cert-watermark-overlay">
+                <div class="cert-watermark-text">PT NUSANTARA AGRO CHARCOAL • OFFICIAL COPY • VERIFY VIA WHATSAPP</div>
+              </div>
+              <span class="cert-tag-issuer">BKPM & Kemendag RI</span>
+              <span class="cert-tag-status">✓ Sah Terdaftar</span>
+            </div>
+            <div class="cert-meta">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span class="cert-ref">NIB-OSS-9120301928371</span>
+                  <span class="cert-date">Aktif Permanen</span>
+                </div>
+                <h4 class="cert-title">Nomor Induk Berusaha (NIB) Hak Akses Kepabeanan</h4>
+                <p class="cert-desc">Identitas badan hukum resmi OSS BKPM RI dengan hak akses ekspor global untuk komoditas arang kelapa, produk pertanian, dan rempah nusantara.</p>
+              </div>
+              <div class="cert-actions-stack">
+                <button class="btn-cert-primary" onclick="openDrawerWithCert('NIB-OSS-9120301928371')">
+                  <span>🔒 Minta PDF Resmi Tanpa Redaksi</span>
+                  <span>→</span>
+                </button>
+                <button class="btn-cert-secondary" onclick="openCertModal(2)">
+                  <span>👁 Periksa Dokumen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: SVLK Timber -->
+          <div class="cert-card">
+            <div class="cert-preview-frame" onclick="openCertModal(3)">
+              <img class="cert-preview-img" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="SVLK Timber">
+              <div class="cert-watermark-overlay">
+                <div class="cert-watermark-text">PT NUSANTARA AGRO CHARCOAL • OFFICIAL COPY • VERIFY VIA WHATSAPP</div>
+              </div>
+              <span class="cert-tag-issuer">KLHK Republik Indonesia</span>
+              <span class="cert-tag-status">✓ Legal Kehutanan</span>
+            </div>
+            <div class="cert-meta">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span class="cert-ref">SVLK-LVLK-005-IDN-2026</span>
+                  <span class="cert-date">Maret 2025</span>
+                </div>
+                <h4 class="cert-title">Sertifikat Kelayakan Kayu & Kelapa Lestari (SVLK)</h4>
+                <p class="cert-desc">Sertifikasi Sistem Verifikasi Legalitas Kelestarian menjamin bahan baku biomassa berasal dari perkebunan legal tanpa praktik deforestasi liar.</p>
+              </div>
+              <div class="cert-actions-stack">
+                <button class="btn-cert-primary" onclick="openDrawerWithCert('SVLK-LVLK-005-IDN-2026')">
+                  <span>🔒 Minta PDF Resmi Tanpa Redaksi</span>
+                  <span>→</span>
+                </button>
+                <button class="btn-cert-secondary" onclick="openCertModal(3)">
+                  <span>👁 Periksa Dokumen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Closing Section -->
+    <section class="closing" id="contact">
+      <div class="wrap">
+        <h2>Mari bicara <em class="serif">kargo</em>.</h2>
+        <p>Hubungi desk ekspor kami untuk mendiskusikan spesifikasi khusus, branding kemasan OEM, atau jadwal inspeksi video langsung di pabrik.</p>
+        <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+          <button class="btn btn-ember btn-sm" style="height: 48px; padding: 0 24px; font-size: 15px;" onclick="openDrawer()">Mulai Minta Penawaran (RFQ) →</button>
+          <a href="https://wa.me/6281234567890?text=Halo%20NusantaraOrigin,%20saya%20ingin%20konsultasi%20ekspor%20komoditas" target="_blank" rel="noopener" class="btn btn-line" style="height: 48px; padding: 0 24px; font-size: 15px;">
+            Hubungi WhatsApp Direktur Ekspor
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <div class="brand" style="margin-bottom: 12px;">
+            <span class="brand-mark"></span>
+            <span>NusantaraOrigin</span>
+          </div>
+          <p style="max-width: 380px; line-height: 1.6;">PT Nusantara Agro Charcoal Indonesia — Pabrik pengolahan briket arang kelapa & eksportir komoditas pertanian nusantara berizin resmi.</p>
+          <div style="margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: var(--ok); display: flex; align-items: center; gap: 8px;">
+            <span class="pulse-dot"></span>
+            <span>OPERATIONAL STATUS: EXPORT FACTORY ACTIVE & STUFFING BAYS OPEN</span>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-size: 14px; margin-bottom: 14px; text-transform: uppercase; font-family: var(--font-mono); color: var(--fg);">Fasilitas & Kantor</h4>
+          <p style="line-height: 1.6;">Jl. Industri Gresik Blok B-12<br>Kawasan Industri Gresik, Jawa Timur 61121<br>Indonesia (25 KM dari Pelabuhan Tanjung Perak)</p>
+        </div>
+        <div>
+          <h4 style="font-size: 14px; margin-bottom: 14px; text-transform: uppercase; font-family: var(--font-mono); color: var(--fg);">Kontak Resmi</h4>
+          <p style="line-height: 1.6;">Email: <a href="mailto:rfq@nusantaraorigin.com" style="color: var(--ember);">rfq@nusantaraorigin.com</a><br>WhatsApp: +62 812-3456-7890<br>Jam Kerja: Sen - Sab (08:00 - 17:00 WIB)</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 PT Nusantara Agro Charcoal Indonesia. Hak cipta dilindungi undang-undang.</span>
+        <span>KBLI: 16292 • 46693 • NIB: 9120301928371</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Inspect Certificate Modal (pt-28 clearance from floating nav) -->
+  <div class="modal-overlay" id="cert-modal" onclick="closeCertModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ember);" id="m-ref">SGS-SUB-2026-88194-COA</div>
+          <h4 style="font-size: 17px; margin-top: 2px;" id="m-title">SGS Certificate of Analysis</h4>
+        </div>
+        <button class="modal-close" onclick="closeCertModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <img class="modal-img" id="m-img" src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80" alt="Document Inspection">
+        <div class="cert-watermark-overlay">
+          <div class="cert-watermark-text">PT NUSANTARA AGRO CHARCOAL • OFFICIAL SPECIFICATION COPY • PROTECTED</div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span style="color: var(--muted);">Salinan resmi tanpa redaksi diberikan setelah verifikasi LOI buyer.</span>
+        <button class="btn btn-ember btn-sm" onclick="openDrawerWithCert(currentCertRef)">Minta PDF Tanpa Redaksi →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart RFQ Slide-Over Drawer -->
+  <div class="drawer-scrim" id="drawer-scrim" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="dr-head">
+      <div>
+        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ember); font-weight: 600;">OFFICIAL B2B EXPORT DESK</span>
+        <h3 style="font-size: 20px; margin-top: 2px;">Minta Penawaran Kargo (RFQ)</h3>
+      </div>
+      <button style="font-size: 20px; font-weight: bold; padding: 8px;" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="dr-body">
+      <div class="summary-box">
+        <div style="font-weight: 600; color: var(--ink); margin-bottom: 4px;" id="dr-sum-title">01 Shisha Coconut Charcoal</div>
+        <div style="color: var(--ink-muted);" id="dr-sum-desc">1 × 40ft High Cube (~25.0 Metrik Ton) • FOB Surabaya</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-lbl">Nama Lengkap & Jabatan</label>
+        <input class="input-txt" id="f-name" type="text" placeholder="misal: Ahmed Al-Mansoor (Import Manager)">
+      </div>
+      <div class="input-group">
+        <label class="input-lbl">Nama Perusahaan Pembeli</label>
+        <input class="input-txt" id="f-comp" type="text" placeholder="misal: Gulf Trading & Logistics LLC">
+      </div>
+      <div class="input-group">
+        <label class="input-lbl">Negara & Pelabuhan Tujuan</label>
+        <input class="input-txt" id="f-dest" type="text" placeholder="misal: Jebel Ali (Dubai) / Hamburg (Jerman)">
+      </div>
+      <div class="input-group">
+        <label class="input-lbl">Nomor WhatsApp / Kontak Langsung</label>
+        <input class="input-txt" id="f-phone" type="tel" placeholder="misal: +971 50 123 4567">
+      </div>
+      <div class="input-group">
+        <label class="input-lbl">Email Perusahaan</label>
+        <input class="input-txt" id="f-email" type="email" placeholder="buyer@gulf-trading.com">
+      </div>
+      <div class="input-group">
+        <label class="input-lbl">Catatan Spesifik / Target Harga</label>
+        <input class="input-txt" id="f-notes" type="text" placeholder="misal: Target FOB $1,300/MT, butuh kubus 26mm kemasan 1kg">
+      </div>
+    </div>
+    <div class="dr-foot">
+      <button class="btn btn-ember" style="flex: 1;" onclick="sendViaWhatsApp()">Kirim via WhatsApp Langsung →</button>
+      <button class="btn btn-dark" style="flex: 1;" onclick="copyRfqData()">Salin Teks RFQ</button>
+    </div>
+  </aside>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    /* ---------- Data Definitions ---------- */
+    var PRODUCTS = [
+      { name: "Shisha Coconut Charcoal", hs: "HS 4402.90.10", price: "$1,280 - $1,340 / MT", img: "https://nusantara-export-template-1.vercel.app/img/shisha-charcoal-cutout.png", fallback: "https://raw.githubusercontent.com/fadlanhy-rpl/nusantara-export-template-1/main/public/img/shisha-charcoal-cutout.png", origin: "Gresik, Jawa Timur • 100% Batok Murni", pay40: 62, vol40: 95, pay20: 58, vol20: 90, limit: "volume" },
+      { name: "BBQ Hardwood & Coconut Hexagonal", hs: "HS 4402.90.90", price: "$890 - $940 / MT", img: "https://nusantara-export-template-1.vercel.app/img/bbq-charcoal-cutout.png", fallback: "https://raw.githubusercontent.com/fadlanhy-rpl/nusantara-export-template-1/main/public/img/bbq-charcoal-cutout.png", origin: "Jawa Timur • Heksagonal Briket", pay40: 74, vol40: 92, pay20: 70, vol20: 88, limit: "volume" },
+      { name: "Sumatra Mandheling Arabica", hs: "HS 0901.11.10", price: "$6,400 - $6,800 / MT", img: "https://nusantara-export-template-1.vercel.app/img/green-coffee-cutout.png", fallback: "https://raw.githubusercontent.com/fadlanhy-rpl/nusantara-export-template-1/main/public/img/green-coffee-cutout.png", origin: "Sumatera Utara • Grade 1 Giling Basah", pay40: 82, vol40: 80, pay20: 78, vol20: 75, limit: "weight" },
+      { name: "Maluku Cloves & Cinnamon", hs: "HS 0907.10.00", price: "$7,800 - $8,200 / MT", img: "https://nusantara-export-template-1.vercel.app/img/cinnamon-spices-cutout.png", fallback: "https://raw.githubusercontent.com/fadlanhy-rpl/nusantara-export-template-1/main/public/img/cinnamon-spices-cutout.png", origin: "Maluku & Sumatera • Sortir Petik Tangan", pay40: 68, vol40: 94, pay20: 65, vol20: 91, limit: "volume" }
+    ];
+
+    var GALLERIES = [
+      { tag: "BUFFER FACILITY", loc: "Gresik Industrial Estate", stage: "STAGE 01 OF 04", title: "Fasilitas Gudang Kargo Kering & Paletisasi", desc: "Area penyimpanan briket terhindar dari kelembapan lantai dengan sirkulasi udara terkontrol, siap muat ke dalam kontainer ekspor.", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1400&q=85", points: ["Bays penyimpanan iklim terkendali (climate-controlled)", "Penghalang kelembapan lantai & sensor kelembapan udara", "Organisasi master karton terpaletisasi untuk pemuatan cepat"] },
+      { tag: "STUFFING & DESICCANTS", loc: "Stuffing Bay #3 • 40ft HC Log", stage: "STAGE 02 OF 04", title: "Pemasangan Kutub Desikan Aktif Kalsium Klorida", desc: "Setiap kontainer dipasangi tiang desikan Super Dry 2000g untuk menyerap kondensasi laut dan menjamin RH < 60% selama pelayaran 45 hari.", img: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1400&q=85", points: ["Desikan Super Dry 2000g kapasitas serap tinggi", "Pemeriksaan integritas dinding dan lantai kontainer", "Susunan interlocking kokoh untuk mencegah guncangan laut"] },
+      { tag: "PORT OF LOADING", loc: "Pelabuhan Tanjung Perak, Surabaya", stage: "STAGE 03 OF 04", title: "Koridor Transportasi Langsung 25 KM ke Terminal Petikemas", desc: "Akses tol langsung dari pabrik Gresik ke dermaga peti kemas Surabaya meminimalkan risiko keterlambatan jadwal kapal (feeder vessel).", img: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1400&q=85", points: ["Waktu tempuh 45 menit via tol langsung Gresik - Perak", "Kliring kepabeanan ekspor cepat Bea Cukai Surabaya", "Koordinasi forwarder maritim kelas satu (Maersk, MSC, CMA CGM)"] },
+      { tag: "ISO 17712 BOLT SEAL", loc: "Serial Log: ID-SUB-849201", stage: "STAGE 04 OF 04", title: "Penyegelan Kontainer dengan Segel Baut Baja Standar Global", desc: "Pintu kontainer dikunci dengan High Security Bolt Seal bersertifikat ISO 17712. Nomor seri dicatat resmi pada Bill of Lading.", img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?auto=format&fit=crop&w=1400&q=85", points: ["Segel baut baja anti-manipulasi standar ISO/PAS 17712", "Dokumentasi foto bernomor seri tercatat pada B/L", "Jaminan kontainer tidak dibuka hingga tiba di pelabuhan tujuan"] }
+    ];
+
+    var CERTS = [
+      { ref: "SGS-SUB-2026-88194-COA", title: "SGS Certificate of Analysis (COA Batch Test)", img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80" },
+      { ref: "MSDS-IMDG-SP925-NON-DG", title: "MSDS & IMO Self-Heating Non-DG Declaration", img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80" },
+      { ref: "NIB-OSS-9120301928371", title: "Nomor Induk Berusaha (NIB) Hak Akses Kepabeanan", img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" },
+      { ref: "SVLK-LVLK-005-IDN-2026", title: "Sertifikat Kelayakan Kayu & Kelapa Lestari (SVLK)", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" }
+    ];
+
+    var currentProd = 0;
+    var currentBox = '40hc';
+    var currentQty = 1;
+    var currentInco = 'FOB';
+    var currentCertRef = CERTS[0].ref;
+
+    /* ---------- Commodity Accordion & Tilt ---------- */
+    function selectProduct(idx) {
+      currentProd = idx;
+      for (var i = 0; i < 4; i++) {
+        var el = document.getElementById('com-' + i);
+        if (el) el.classList.toggle('active', i === idx);
+      }
+      var p = PRODUCTS[idx];
+      var scHs = document.getElementById('sc-hs');
+      var scImg = document.getElementById('sc-img');
+      var scName = document.getElementById('sc-name');
+      var scOrigin = document.getElementById('sc-origin');
+      if (scHs) scHs.textContent = p.hs;
+      if (scImg) {
+        scImg.src = p.img;
+        scImg.onerror = function() { this.src = p.fallback; };
+      }
+      if (scName) scName.textContent = p.name;
+      if (scOrigin) scOrigin.textContent = "Origin: " + p.origin;
+    }
+
+    /* 3D Tilt Effect on Showcase Card */
+    var card = document.getElementById('showcase-card');
+    if (card) {
+      card.addEventListener('mousemove', function(e) {
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left - rect.width / 2;
+        var y = e.clientY - rect.top - rect.height / 2;
+        var rotX = -(y / (rect.height / 2)) * 14;
+        var rotY = (x / (rect.width / 2)) * 14;
+        var img = document.getElementById('sc-img');
+        if (img) img.style.transform = "translate(-50%, -50%) rotateX(" + rotX + "deg) rotateY(" + rotY + "deg) scale(1.04)";
+      });
+      card.addEventListener('mouseleave', function() {
+        var img = document.getElementById('sc-img');
+        if (img) img.style.transform = "translate(-50%, -50%) rotateX(0deg) rotateY(0deg) scale(1)";
+      });
+    }
+
+    function prefillAndPlan(idx) {
+      selectProduct(idx);
+      setSimProd(idx);
+      document.getElementById('planner').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ---------- Container Price Simulator ---------- */
+    function updateSimulator() {
+      var p = PRODUCTS[currentProd];
+      var is40 = currentBox === '40hc';
+      var payPct = is40 ? p.pay40 : p.pay20;
+      var volPct = is40 ? p.vol40 : p.vol20;
+      var mtPerBox = is40 ? (p.limit === 'volume' ? 25.0 : 27.5) : (p.limit === 'volume' ? 14.5 : 18.0);
+      var totalMt = mtPerBox * currentQty;
+
+      document.getElementById('c-cargo-name').textContent = p.name;
+      document.getElementById('c-dims').textContent = is40 ? "12.03 × 2.35 × 2.69 m (76.4 m³)" : "5.90 × 2.35 × 2.39 m (33.2 m³)";
+      document.getElementById('pct-pay').textContent = payPct + "%";
+      document.getElementById('pct-vol').textContent = volPct + "%";
+      document.getElementById('bar-pay').style.width = payPct + "%";
+      document.getElementById('bar-vol').style.width = volPct + "%";
+      document.getElementById('c-weight').textContent = totalMt.toFixed(1) + " Metrik Ton";
+      document.getElementById('c-price').textContent = p.price;
+
+      var limitBox = document.getElementById('limit-box');
+      var limitTxt = document.getElementById('limit-txt');
+      if (p.limit === 'volume') {
+        limitTxt.textContent = "Volume-limited: Kargo ini mengisi penuh volume kontainer sebelum menyentuh batas berat kargo.";
+        limitBox.style.background = "#FDF3EB";
+        limitBox.style.color = "var(--ember-deep)";
+      } else {
+        limitTxt.textContent = "Weight-limited: Kargo ini mencapai batas berat muatan sebelum kubikasi kontainer penuh.";
+        limitBox.style.background = "#EFF6FF";
+        limitBox.style.color = "#1D4ED8";
+      }
+
+      document.getElementById('dr-sum-title').textContent = p.name;
+      document.getElementById('dr-sum-desc').textContent = currentQty + " × " + (is40 ? "40ft High Cube" : "20ft Standard") + " (~" + totalMt.toFixed(1) + " MT) • " + currentInco;
+    }
+
+    function setSimProd(idx) {
+      currentProd = idx;
+      var pills = document.querySelectorAll('#p-prod .pill');
+      pills.forEach(function(b, i) { b.classList.toggle('active', i === idx); });
+      updateSimulator();
+    }
+    function setSimBox(box) {
+      currentBox = box;
+      var pills = document.querySelectorAll('#p-box .pill');
+      pills[0].classList.toggle('active', box === '40hc');
+      pills[1].classList.toggle('active', box === '20ft');
+      updateSimulator();
+    }
+    function stepQty(d) {
+      currentQty = Math.max(1, Math.min(10, currentQty + d));
+      document.getElementById('qty-disp').textContent = currentQty;
+      updateSimulator();
+    }
+    function setSimInco(inco) {
+      currentInco = inco;
+      var pills = document.querySelectorAll('#p-inco .pill');
+      pills[0].classList.toggle('active', inco === 'FOB');
+      pills[1].classList.toggle('active', inco === 'CIF');
+      pills[2].classList.toggle('active', inco === 'EXW');
+      updateSimulator();
+    }
+
+    /* ---------- Trust Section Tabs & Gallery ---------- */
+    function switchTrustTab(tab) {
+      var isGal = tab === 'gallery';
+      document.getElementById('trust-gallery').style.display = isGal ? 'grid' : 'none';
+      document.getElementById('trust-certs').style.display = isGal ? 'none' : 'grid';
+      document.getElementById('btn-tab-gallery').classList.toggle('active', isGal);
+      document.getElementById('btn-tab-certs').classList.toggle('active', !isGal);
+    }
+
+    function selectGallery(idx) {
+      var g = GALLERIES[idx];
+      document.getElementById('vf-img').src = g.img;
+      document.getElementById('vf-tag').textContent = g.tag;
+      document.getElementById('vf-loc').textContent = g.loc;
+      document.getElementById('vf-stage').textContent = g.stage;
+      document.getElementById('vf-title').textContent = g.title;
+      document.getElementById('vf-desc').textContent = g.desc;
+      var pts = document.getElementById('vf-points');
+      pts.innerHTML = g.points.map(function(p) { return '<li>' + p + '</li>'; }).join('');
+      for (var i = 0; i < 4; i++) {
+        var el = document.getElementById('th-' + i);
+        if (el) el.classList.toggle('active', i === idx);
+      }
+    }
+
+    /* ---------- Inspect Modal ---------- */
+    function openCertModal(idx) {
+      var c = CERTS[idx];
+      currentCertRef = c.ref;
+      document.getElementById('m-ref').textContent = c.ref;
+      document.getElementById('m-title').textContent = c.title;
+      document.getElementById('m-img').src = c.img;
+      document.getElementById('cert-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeCertModal() {
+      document.getElementById('cert-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeCertModal();
+    });
+
+    /* ---------- Drawer Controls ---------- */
+    function openDrawer() {
+      document.getElementById('drawer').classList.add('open');
+      document.getElementById('drawer-scrim').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function openDrawerWithPlan() {
+      updateSimulator();
+      openDrawer();
+    }
+    function openDrawerWithCert(ref) {
+      closeCertModal();
+      document.getElementById('f-notes').value = "Permintaan salinan spesifikasi resmi tanpa redaksi: " + ref;
+      openDrawer();
+    }
+    function closeDrawer() {
+      document.getElementById('drawer').classList.remove('open');
+      document.getElementById('drawer-scrim').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function getRfqText() {
+      var p = PRODUCTS[currentProd];
+      var name = document.getElementById('f-name').value || 'Buyer Partner';
+      var comp = document.getElementById('f-comp').value || 'Import Company';
+      var dest = document.getElementById('f-dest').value || 'Port of Destination';
+      var phone = document.getElementById('f-phone').value || '-';
+      var email = document.getElementById('f-email').value || '-';
+      var notes = document.getElementById('f-notes').value || '-';
+
+      return "*NEW EXPORT INQUIRY (RFQ) — NusantaraOrigin*\n" +
+             "----------------------------------------\n" +
+             "*Company:* " + comp + "\n" +
+             "*Contact:* " + name + " (" + email + " / " + phone + ")\n" +
+             "*Commodity:* " + p.name + " (" + p.hs + ")\n" +
+             "*Volume:* " + currentQty + " x " + (currentBox === '40hc' ? "40ft HC" : "20ft STD") + "\n" +
+             "*Incoterms:* " + currentInco + " -> " + dest + "\n" +
+             "*Notes:* " + notes + "\n" +
+             "----------------------------------------\n" +
+             "Dikirim via website resmi NusantaraOrigin";
+    }
+
+    function sendViaWhatsApp() {
+      var text = encodeURIComponent(getRfqText());
+      window.open("https://wa.me/6281234567890?text=" + text, '_blank');
+    }
+
+    function copyRfqData() {
+      navigator.clipboard.writeText(getRfqText()).then(function() {
+        alert("Format teks RFQ berhasil disalin ke clipboard! Anda dapat menempelkannya ke email atau chat.");
+      });
+    }
+
+    /* ---------- Three.js Detailed Realistic Glowing Coal Cube ---------- */
+    (function initThree() {
+      var canvas = document.getElementById('gl');
+      if (!canvas || !window.THREE) return;
+      var THREE = window.THREE;
+
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 0, 7.5);
+
+      // Lights
+      var ambLight = new THREE.AmbientLight(0xffffff, 0.25);
+      scene.add(ambLight);
+
+      var dirLight = new THREE.DirectionalLight(0xffe8d6, 1.4);
+      dirLight.position.set(4, 5, 5);
+      scene.add(dirLight);
+
+      var heatLight = new THREE.PointLight(0xE8742A, 2.5, 8);
+      scene.add(heatLight);
+
+      // Create procedural realistic burning charcoal bump & emissive texture
+      function makeCoalTexture() {
+        var cv = document.createElement('canvas');
+        cv.width = 512; cv.height = 512;
+        var ctx = cv.getContext('2d');
+        ctx.fillStyle = '#161618';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Carbon noise texture
+        for (var i = 0; i < 4000; i++) {
+          var x = Math.random() * 512, y = Math.random() * 512;
+          var r = Math.random() * 2;
+          ctx.fillStyle = Math.random() > 0.5 ? '#242428' : '#0B0B0C';
+          ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // Glowing orange crack veins
+        ctx.strokeStyle = 'rgba(232, 116, 42, 0.75)';
+        ctx.lineWidth = 3;
+        for (var j = 0; j < 14; j++) {
+          ctx.beginPath();
+          var sx = Math.random() * 512, sy = Math.random() * 512;
+          ctx.moveTo(sx, sy);
+          for (var k = 0; k < 6; k++) {
+            sx += (Math.random() - 0.5) * 80;
+            sy += (Math.random() - 0.5) * 80;
+            ctx.lineTo(sx, sy);
+          }
+          ctx.stroke();
+        }
+
+        // Intense core hot spots
+        ctx.strokeStyle = 'rgba(255, 200, 80, 0.9)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        return new THREE.CanvasTexture(cv);
+      }
+
+      var coalTex = makeCoalTexture();
+      var coalGeo = new THREE.BoxGeometry(2.1, 2.1, 2.1, 16, 16, 16);
+      var coalMat = new THREE.MeshStandardMaterial({
+        map: coalTex,
+        bumpMap: coalTex,
+        bumpScale: 0.18,
+        roughness: 0.75,
+        metalness: 0.2,
+        emissive: new THREE.Color(0xC95E1B),
+        emissiveMap: coalTex,
+        emissiveIntensity: 0.75
+      });
+
+      var coalCube = new THREE.Mesh(coalGeo, coalMat);
+      scene.add(coalCube);
+
+      // Floating ember particles
+      var partCount = 45;
+      var partGeo = new THREE.BufferGeometry();
+      var partPos = new Float32Array(partCount * 3);
+      for (var p = 0; p < partCount * 3; p += 3) {
+        partPos[p] = (Math.random() - 0.5) * 5;
+        partPos[p + 1] = (Math.random() - 0.5) * 5;
+        partPos[p + 2] = (Math.random() - 0.5) * 5;
+      }
+      partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
+      var partMat = new THREE.PointsMaterial({ color: 0xE8742A, size: 0.04, transparent: true, opacity: 0.8 });
+      var particles = new THREE.Points(partGeo, partMat);
+      scene.add(particles);
+
+      // Responsive & Scroll positioning
+      function onResize() {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      window.addEventListener('resize', onResize);
+
+      var clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+
+        coalCube.rotation.x = t * 0.22;
+        coalCube.rotation.y = t * 0.35;
+        particles.rotation.y = t * 0.08;
+
+        // Position cube in hero slot on desktop
+        if (window.innerWidth > 990) {
+          coalCube.position.set(2.4, 0.4, 0);
+          particles.position.set(2.4, 0.4, 0);
+        } else {
+          coalCube.position.set(0, 1.2, -1);
+          particles.position.set(0, 1.2, -1);
+        }
+
+        // Pulse heating glow
+        var pulse = 0.65 + Math.sin(t * 3.0) * 0.18;
+        coalMat.emissiveIntensity = pulse;
+        heatLight.intensity = 2.0 + Math.sin(t * 3.0) * 0.8;
+        heatLight.position.copy(coalCube.position);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+
+    // Initial setup
+    updateSimulator();
+  </script>
+</body>
+</html>
+'''
+
+output_path = os.path.abspath('nusantara-origin-landing-standalone.html')
+with open(output_path, 'w', encoding='utf-8') as f:
+    f.write(HTML_CONTENT)
+
+print(f"Generated standalone HTML file successfully at: {output_path}")
+print(f"File size: {len(HTML_CONTENT)} bytes ({len(HTML_CONTENT)/1024:.2f} KB)")
