@@ -967,6 +967,7 @@ export function WebGLScene({
     let visH = 1;
     let visW = 1;
     const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+    let needsLayoutSync = true;
 
     function resize() {
       vw = window.innerWidth;
@@ -1055,7 +1056,6 @@ export function WebGLScene({
       return { top: r.top, bottom: r.bottom };
     }
 
-    let needsLayoutSync = true;
     function syncLayoutRects() {
       if (!elSlotHero) queryDOMElements();
       cachedSh = measureSlot(elSlotHero);
