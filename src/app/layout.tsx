@@ -1,6 +1,33 @@
 import type { Metadata, Viewport } from 'next';
+import { Geist, Geist_Mono, Instrument_Serif, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import './globals.css';
 import { PitchProvider } from '@/context/PitchContext';
+
+const geistSans = Geist({
+  variable: '--font-sans',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: '--font-serif',
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  variable: '--font-arabic',
+  weight: ['400', '500', '600', '700'],
+  subsets: ['arabic'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'NusantaraOrigin — Direct Indonesian Commodity & Coconut Charcoal Bulk Export',
@@ -21,15 +48,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${ibmPlexArabic.variable}`}
+    >
       <body>
         <PitchProvider>
           {children}

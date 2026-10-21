@@ -971,15 +971,17 @@ export function WebGLScene({
     function resize() {
       vw = window.innerWidth;
       vh = window.innerHeight;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      // Cap DPR to 1.75 to save up to 40% fragment shader fill rate on high-DPI/mobile screens
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
       renderer.setSize(vw, vh, false);
       camera.aspect = vw / vh;
       camera.updateProjectionMatrix();
       visH = 2 * D * Math.tan((FOV * Math.PI) / 360);
       visW = visH * camera.aspect;
+      needsLayoutSync = true;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
 
     const onPointerMove = (e: MouseEvent) => {
       ptr.tx = (e.clientX / vw - 0.5) * 2;
@@ -987,10 +989,55 @@ export function WebGLScene({
     };
     window.addEventListener('pointermove', onPointerMove, { passive: true });
 
-    function slotInfo(el: Element | null) {
-      if (!el) {
-        return { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
-      }
+    // Performance Optimization: DOM Query & Layout Thrashing Elimination
+    // Elements are queried once, and rects are measured only on scroll/resize rather than every RAF frame.
+    let elSlotHero: HTMLElement | null = null;
+    let elSlotCom: HTMLElement | null = null;
+    let elSlotProc: HTMLElement | null = null;
+    let elSlotClose: HTMLElement | null = null;
+    let elSecPlan: HTMLElement | null = null;
+    let elSecCom: HTMLElement | null = null;
+    let elSecProc: HTMLElement | null = null;
+    let elSecClose: HTMLElement | null = null;
+
+    function queryDOMElements() {
+      elSlotHero = document.getElementById('slot-hero');
+      elSlotCom = document.getElementById('slot-com');
+      elSlotProc = document.getElementById('slot-proc');
+      elSlotClose = document.getElementById('slot-close');
+      elSecPlan = document.getElementById('planner');
+      elSecCom = document.getElementById('commodities');
+      elSecProc = document.getElementById('process');
+      elSecClose = document.getElementById('contact');
+    }
+    queryDOMElements();
+
+    interface SlotRect {
+      cx: number;
+      cy: number;
+      w: number;
+      h: number;
+      top: number;
+      bottom: number;
+    }
+
+    interface SecRect {
+      top: number;
+      bottom: number;
+    }
+
+    let cachedSh: SlotRect = { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
+    let cachedSc: SlotRect = { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
+    let cachedSp: SlotRect = { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
+    let cachedScl: SlotRect = { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
+
+    let cachedRc: SecRect = { top: 0, bottom: vh };
+    let cachedRp: SecRect = { top: 0, bottom: vh };
+    let cachedRcl: SecRect = { top: 0, bottom: vh };
+    let cachedRplan: SecRect = { top: vh * 2, bottom: vh * 3 };
+
+    function measureSlot(el: HTMLElement | null): SlotRect {
+      if (!el) return { cx: vw * 0.5, cy: vh * 0.5, w: 200, h: 200, top: 0, bottom: vh };
       const r = el.getBoundingClientRect();
       return {
         cx: r.left + r.width / 2,
@@ -1002,16 +1049,41 @@ export function WebGLScene({
       };
     }
 
+    function measureSec(el: HTMLElement | null): SecRect {
+      if (!el) return { top: 0, bottom: 0 };
+      const r = el.getBoundingClientRect();
+      return { top: r.top, bottom: r.bottom };
+    }
+
+    let needsLayoutSync = true;
+    function syncLayoutRects() {
+      if (!elSlotHero) queryDOMElements();
+      cachedSh = measureSlot(elSlotHero);
+      cachedSc = measureSlot(elSlotCom);
+      cachedSp = measureSlot(elSlotProc);
+      cachedScl = measureSlot(elSlotClose);
+      cachedRplan = measureSec(elSecPlan);
+      cachedRc = measureSec(elSecCom);
+      cachedRp = measureSec(elSecProc);
+      cachedRcl = measureSec(elSecClose);
+      needsLayoutSync = false;
+    }
+
+    const onScroll = () => {
+      needsLayoutSync = true;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     function ease(t: number) {
       const c = Math.min(1, Math.max(0, t));
       return c * c * (3 - 2 * c);
     }
 
-    function secVis(r: DOMRect) {
+    function secVis(r: SecRect) {
       return ease((vh - r.top) / (vh * 0.6)) * ease(r.bottom / (vh * 0.6));
     }
 
-    function slotVis(s: ReturnType<typeof slotInfo>, fadeDistance: number = 110) {
+    function slotVis(s: SlotRect, fadeDistance: number = 110) {
       const exitTop = Math.min(1, Math.max(0, s.bottom / fadeDistance));
       const exitBottom = Math.min(1, Math.max(0, (vh - s.top) / fadeDistance));
       return ease(exitTop) * ease(exitBottom);
@@ -1022,7 +1094,7 @@ export function WebGLScene({
     const rackExp = [0.9, 1.0, 1.3, 1.2, 1.0];
     let rackExpNow = 0.9;
 
-    function place(e: Entity, s: ReturnType<typeof slotInfo>, vis: number, t: number) {
+    function place(e: Entity, s: SlotRect, vis: number, t: number) {
       const f = (D - e.z) / D;
       const sx = s.cx + e.nx * s.w;
       const sy = s.cy + e.ny * s.h;
@@ -1060,7 +1132,7 @@ export function WebGLScene({
       }
     }
 
-    let animationId: number;
+    let animationId: number = 0;
 
     const renderLoop = (timeMs: number) => {
       animationId = requestAnimationFrame(renderLoop);
@@ -1072,35 +1144,24 @@ export function WebGLScene({
       ptr.x += (ptr.tx - ptr.x) * kp;
       ptr.y += (ptr.ty - ptr.y) * kp;
 
-      const slots = {
-        hero: document.getElementById('slot-hero'),
-        com: document.getElementById('slot-com'),
-        proc: document.getElementById('slot-proc'),
-        close: document.getElementById('slot-close'),
-      };
-
-      const secs = {
-        com: document.getElementById('commodities'),
-        proc: document.getElementById('process'),
-        close: document.getElementById('contact'),
-        plan: document.getElementById('planner'),
-      };
+      // Sync DOM slot rectangles only when scroll or resize occurred
+      if (needsLayoutSync) {
+        syncLayoutRects();
+      }
 
       // Thermodynamic thermal breathing: living coals pulse with realistic heat fluctuation
       const thermalBreath =
         1.0 + Math.sin(t * 1.8) * 0.14 + Math.sin(t * 4.2) * 0.06;
 
-      // 1. Planner Occlusion Optimization
-      if (secs.plan) {
-        const pr = secs.plan.getBoundingClientRect();
-        if (pr.top <= 0 && pr.bottom >= vh) {
-          // Completely covered by light paper band
-          return;
-        }
+      // 1. Planner Occlusion Optimization (Zero rendering when user is inside calculator band)
+      if (cachedRplan.top <= 0 && cachedRplan.bottom >= vh) {
+        return;
       }
 
+      let anyVisible = false;
+
       // 2. Hero Cluster (3D Container + 3D Glowing Coal Cube + Floating Photo Planes)
-      const sh = slotInfo(slots.hero);
+      const sh = cachedSh;
       const heroVis = slotVis(sh, 140);
       const heroOn = heroVis > 0.005;
       if (heroCnt) heroCnt.obj.visible = heroOn && built;
@@ -1110,6 +1171,7 @@ export function WebGLScene({
       });
 
       if (heroOn && built) {
+        anyVisible = true;
         if (heroCnt) place(heroCnt, sh, heroVis, t);
         if (heroCube) {
           place(heroCube, sh, heroVis, t);
@@ -1126,10 +1188,9 @@ export function WebGLScene({
       }
 
       // 3. Commodities Showcase (#slot-com)
-      if (secs.com && slots.com) {
-        const rc = secs.com.getBoundingClientRect();
-        const sc = slotInfo(slots.com);
-        // Multiplies section visibility with slot's own viewport visibility to prevent floating on mobile
+      if (elSecCom && elSlotCom) {
+        const rc = cachedRc;
+        const sc = cachedSc;
         const cv_ = secVis(rc) * slotVis(sc, 120);
         const currentActive = stateRef.current.activeCom;
 
@@ -1141,6 +1202,7 @@ export function WebGLScene({
           entItem.obj.visible = show;
 
           if (show) {
+            anyVisible = true;
             entItem.fade = 1;
             place(entItem, sc, ease(cv_) * ease(entItem.a), t);
             entItem.obj.rotation.y += (1 - entItem.a) * 0.7;
@@ -1159,15 +1221,16 @@ export function WebGLScene({
       }
 
       // 4. Process Section (#slot-proc) - Drying Rack photo-plane
-      if (secs.proc && slots.proc && rackEnt) {
-        const rp = secs.proc.getBoundingClientRect();
-        const sp = slotInfo(slots.proc);
+      if (elSecProc && elSlotProc && rackEnt) {
+        const rp = cachedRp;
+        const sp = cachedSp;
         const pv = secVis(rp) * slotVis(sp, 100);
         const stage = stateRef.current.stageIdx;
         const pProgress = stateRef.current.procP;
 
         rackEnt.obj.visible = pv > 0.005;
         if (pv > 0.005) {
+          anyVisible = true;
           rackEnt.fade = 1;
           place(rackEnt, sp, pv, t);
 
@@ -1181,28 +1244,51 @@ export function WebGLScene({
       }
 
       // 5. Closing Section (#slot-close) - 3D Shipping Container
-      if (secs.close && slots.close && closeCnt) {
-        const rcl = secs.close.getBoundingClientRect();
-        const scl = slotInfo(slots.close);
+      if (elSecClose && elSlotClose && closeCnt) {
+        const rcl = cachedRcl;
+        const scl = cachedScl;
         const cvis = secVis(rcl) * slotVis(scl, 100);
 
         closeCnt.obj.visible = cvis > 0.005;
         if (cvis > 0.005) {
+          anyVisible = true;
           closeCnt.fade = 1;
           place(closeCnt, scl, cvis, t);
           closeCnt.obj.rotation.y = -0.6 + Math.sin(t * 0.3) * 0.5 + ptr.x * 0.3;
         }
       }
 
-      renderer.render(scene, camera);
+      // Skip GPU render if no 3D elements are currently within view
+      if (anyVisible) {
+        renderer.render(scene, camera);
+      }
     };
+
+    // Page Visibility API Optimization: Pause RAF loop when tab is backgrounded
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = 0;
+        }
+      } else {
+        lastT = performance.now() / 1000;
+        needsLayoutSync = true;
+        if (!animationId) {
+          animationId = requestAnimationFrame(renderLoop);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     animationId = requestAnimationFrame(renderLoop);
 
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationId) cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       renderer.dispose();
       Object.keys(T).forEach((k) => T[k]?.dispose());
       Object.keys(PHOTO).forEach((k) => PHOTO[k]?.tex.dispose());

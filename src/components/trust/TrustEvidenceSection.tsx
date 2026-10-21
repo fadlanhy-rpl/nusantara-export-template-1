@@ -159,6 +159,8 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
                   key={currentGallery.img}
                   src={currentGallery.img}
                   alt={currentGallery.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover filter brightness-90 contrast-110 transition-all duration-700 group-hover:scale-102"
                 />
 
@@ -258,6 +260,8 @@ export function TrustEvidenceSection({ locale, dict }: TrustEvidenceSectionProps
                       <img
                         src={item.img}
                         alt={item.title}
+                        loading="lazy"
+                        decoding="async"
                         className={`w-full h-full object-cover transition-transform duration-500 ${
                           isSelected ? 'scale-105 brightness-100' : 'brightness-75'
                         }`}

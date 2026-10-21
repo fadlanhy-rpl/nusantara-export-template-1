@@ -56,6 +56,8 @@ export function WatermarkedCertCard({
             src={cert.previewUrl}
             alt={cert.title}
             draggable={false}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-top opacity-80 group-hover:scale-105 transition-transform duration-700 filter contrast-125 brightness-90"
           />
 
@@ -201,6 +203,8 @@ export function WatermarkedCertCard({
                 src={cert.previewUrl}
                 alt={cert.title}
                 draggable={false}
+                loading="lazy"
+                decoding="async"
                 className="max-h-[38vh] sm:max-h-[44vh] w-auto object-contain rounded-lg border border-white/10 filter contrast-110 shadow-2xl"
               />
 

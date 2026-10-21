@@ -2002,16 +2002,31 @@ HTML_CONTENT = r'''<!doctype html>
       var particles = new THREE.Points(partGeo, partMat);
       scene.add(particles);
 
+      var heroEl = document.getElementById('hero');
+      var heroVis = 1;
+      var needsSync = true;
+      function syncHeroVis() {
+        if (heroEl) {
+          var hr = heroEl.getBoundingClientRect();
+          heroVis = Math.min(1, Math.max(0, hr.bottom / 140));
+        }
+        needsSync = false;
+      }
+      syncHeroVis();
+
       function onResize() {
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        needsSync = true;
       }
-      window.addEventListener('resize', onResize);
+      window.addEventListener('resize', onResize, { passive: true });
+      window.addEventListener('scroll', function() { needsSync = true; }, { passive: true });
 
       var clock = new THREE.Clock();
+      var animId = 0;
       function animate() {
-        requestAnimationFrame(animate);
+        animId = requestAnimationFrame(animate);
         var t = clock.getElapsedTime();
 
         coalCube.rotation.x = t * 0.22;
@@ -2027,12 +2042,8 @@ HTML_CONTENT = r'''<!doctype html>
           particles.position.set(0, 0.9, -1);
         }
 
-        // Slot-based visibility clamping: Fades out cleanly as Hero section leaves viewport
-        var heroEl = document.getElementById('hero');
-        var heroVis = 1;
-        if (heroEl) {
-          var hr = heroEl.getBoundingClientRect();
-          heroVis = Math.min(1, Math.max(0, hr.bottom / 140));
+        if (needsSync) {
+          syncHeroVis();
         }
 
         var isVisible = heroVis > 0.005;
@@ -2045,10 +2056,19 @@ HTML_CONTENT = r'''<!doctype html>
           coalMat.opacity = heroVis;
           heatLight.intensity = (2.0 + Math.sin(t * 3.0) * 0.8) * heroVis;
           heatLight.position.copy(coalCube.position);
+          renderer.render(scene, camera);
         }
-
-        renderer.render(scene, camera);
       }
+
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          if (animId) { cancelAnimationFrame(animId); animId = 0; }
+        } else {
+          needsSync = true;
+          if (!animId) animate();
+        }
+      });
+
       animate();
     })();
 

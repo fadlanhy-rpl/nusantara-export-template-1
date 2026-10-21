@@ -1,15 +1,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { LocaleCode } from '@/types/export-config';
 import { getDictionary } from '@/lib/dictionary';
 import { usePitch } from '@/context/PitchContext';
-import { WebGLScene } from '@/components/canvas/WebGLScene';
 import { ContainerPriceSimulator } from '@/components/calculator/ContainerPriceSimulator';
 import { TrustEvidenceSection } from '@/components/trust/TrustEvidenceSection';
 import { siteConfig } from '@/config/site-config';
 import { isRtl } from '@/lib/i18n';
+
+// Code-split Three.js WebGL canvas out of the initial critical JavaScript bundle
+const WebGLScene = dynamic(
+  () => import('@/components/canvas/WebGLScene').then((mod) => mod.WebGLScene),
+  { ssr: false }
+);
 
 export default function HomePage() {
   const params = useParams();
@@ -30,9 +36,32 @@ export default function HomePage() {
   const statementText = dict.statement.text;
   const words = locale === 'zh' ? statementText.split('') : statementText.split(' ');
 
-  // Scroll handler for statement word-reveal & process stages
+  // Asynchronous IntersectionObserver for .rv animation triggers (Zero scroll layout overhead)
   useEffect(() => {
-    const handleScroll = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px' }
+    );
+
+    document.querySelectorAll('.rv:not(.in)').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // RAF-throttled scroll handler for statement word-reveal & process stages
+  useEffect(() => {
+    let ticking = false;
+
+    const computeScroll = () => {
       const vh = window.innerHeight;
 
       // 1. Statement Word-by-Word Opacity Reveal
@@ -55,18 +84,20 @@ export default function HomePage() {
         const idx = Math.min(4, Math.floor(progress * 5));
         setStageIdx(idx);
       }
+    };
 
-      // 3. Reveal elements
-      document.querySelectorAll('.rv:not(.in)').forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.top < vh * 0.88) {
-          el.classList.add('in');
-        }
-      });
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          computeScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    computeScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [words.length]);
 
